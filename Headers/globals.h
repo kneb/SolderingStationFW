@@ -23,10 +23,10 @@
 
 #define DDR_LCD_RS DDRD
 #define PORT_LCD_RS PORTD
-#define PIN_LCD_RS (1<<PIND0)
+#define PIN_LCD_RS (1 << PIND0)
 #define DDR_LCD_E DDRD
 #define PORT_LCD_E PORTD
-#define PIN_LCD_E (1<<PIND1)
+#define PIN_LCD_E (1 << PIND1)
 #define DDR_LCD_D DDRD
 #define PORT_LCD_D PORTD
 
@@ -34,7 +34,10 @@
 #define DDR_ENCODER_A DDRD
 #define DDR_ENCODER_B DDRC
 #define PIN_ENCEDER_SW PINC
-#define ENCEDER_SW (1<<PINC4)
+#define ENCEDER_SW (1 << PINC4)
+
+#define LED_FEN (1 << PINB4)
+#define LED_SOL (1 << PINB5)
 
 extern HD44780 lcd;
 extern Encoder encoder;

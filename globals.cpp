@@ -12,15 +12,22 @@ Encoder encoder;
 ThermoFan thermoFan;
 Solder solder;
 
+uint8_t tim = 0;
+
 void init_ports(){
-  DDRB = 0b00000000;
-  DDRC = 0b00000000;  
-  DDRD = 0b11110011; 
+  PORTB = 0b00110000;
+  DDRB = 0b00110000;
+  DDRC = 0b00000100;
+  DDRD = 0b11110011;
 
   PORTC = 0b00010000;
- 
-  MCUCR |= (1 << ISC00)|(1 << ISC10);    
+
+  MCUCR |= (1 << ISC00)|(1 << ISC10);
   GICR |= (1 << INT0);
+
+  TCCR0 = (1 << CS00)|(1 << CS02);
+  TIMSK = (1 << TOIE0);
+  
 }
 
 ISR(INT0_vect){
@@ -35,4 +42,14 @@ ISR(INT0_vect){
   }
   GIFR |= (1 << INTF0);
   GICR |= (1 << INT0);
+}
+
+ISR(TIMER0_OVF_vect){
+  if (tim < 61) {
+    tim ++;
+  } else {
+    tim = 0;
+    PORTB ^= LED_FEN;
+  }
+
 }
