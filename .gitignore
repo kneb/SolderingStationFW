@@ -1,2 +1,8 @@
 .vscode
+.vs
 Build
+Debug
+Release
+*.cppproj
+*.componentinfo.xml
+*.atsln
