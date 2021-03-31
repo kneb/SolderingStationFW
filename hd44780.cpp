@@ -14,7 +14,7 @@ const uint8_t otherSymbol[8][8] PROGMEM = {
   {0x06, 0x06, 0x14, 0x1b, 0x05, 0x0c, 0x0c, 0x00},
   {0x00, 0x0c, 0x13, 0x0c, 0x13, 0x0c, 0x13, 0x00},
   {0x0e, 0x11, 0x11, 0x0e, 0x00, 0x0e, 0x1f, 0x00},
-  {0x00, 0x00, 0x11, 0x0e, 0x00, 0x0e, 0x1f, 0x00},
+  {0x1f, 0x00, 0x1f, 0x00, 0x1f, 0x00, 0x1f, 0x00},
   {0x02, 0x05, 0x09, 0x1a, 0x1c, 0x18, 0x10, 0x00},
 };
 
@@ -103,22 +103,16 @@ void HD44780::changeParam(){
   }
   switch (this->param) {
     case 1:
-      this->goTo(10, 0);
-      this->sendChar(0x7f);
-      this->goTo(11, 1);
-      this->sendChar(0x20);
+      this->goTo(8, 0);
+      this->sendCommand(LCD_CUR_UL);
       break;
     case 2:
-      this->goTo(11, 0);
-      this->sendChar(0x7e);
-      this->goTo(10, 0);
-      this->sendChar(0x20);
+      this->goTo(14, 0);
+      this->sendCommand(LCD_CUR_UL);
       break;
     case 3:
-      this->goTo(11, 1);
-      this->sendChar(0x7e);
-      this->goTo(11, 0);
-      this->sendChar(0x20);
+      this->goTo(14, 1);
+      this->sendCommand(LCD_CUR_UL);
       break;
   }
 }
@@ -126,11 +120,18 @@ void HD44780::changeParam(){
 void HD44780::printMain(){
   char buf[17];
   lcd.goTo(0, 0);
-  sprintf(buf, "\x04%03d\x02 \x03%2d%%\x7f %03d\x02", 
+  sprintf(buf, "\x04%03d\x02\x7f\x03%2d%%  %03d\x02", 
           thermoFan.currentTemp, thermoFan.fan, thermoFan.setTemp);
   lcd.sendString(buf);
   lcd.goTo(0, 1);
-  sprintf(buf, "%03d\x02  \x01 \x06  %03d\x02", solder.currentTemp, solder.setTemp);
+  sprintf(buf, "%03d\x02 \x01\x05 \x06  %03d\x02", solder.currentTemp, solder.setTemp);
   lcd.sendChar(0);
   lcd.sendString(buf);	
 }  
+
+void HD44780::printLogo(){
+  this->goTo(1, 0);
+  this->sendString("Soldering");
+  this->goTo(3, 1);
+  this->sendString("Station 1.0");
+}

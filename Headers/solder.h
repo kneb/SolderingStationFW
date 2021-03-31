@@ -4,9 +4,6 @@
  * Created: 07.02.2021 2:33:41
  *  Author: Neb Konstantin Viktorovich
  */
-#ifndef __AVR_ATmega8A__
-#define __AVR_ATmega8A__
-#endif
 
 #ifndef SOLDER_H_
 #define SOLDER_H_

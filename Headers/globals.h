@@ -4,12 +4,11 @@
  * Created: 09.02.2021 13:58:42
  *  Author: Neb Konstantin Viktorovich
  */
-#ifndef __AVR_ATmega8A__
-#define __AVR_ATmega8A__
-#endif
 
 #ifndef GLOBALS_H_
 #define GLOBALS_H_
+
+#define F_CPU 16000000UL
 
 #include <avr/io.h>
 #include <util/delay.h>

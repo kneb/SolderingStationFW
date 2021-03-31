@@ -4,9 +4,6 @@
  * Created: 05.02.2021 15:57:08
  *  Author: Neb Konstantin Viktorovich
  */ 
-#ifndef __AVR_ATmega8A__
-#define __AVR_ATmega8A__
-#endif
 
 #ifndef HD44780_H_
 #define HD44780_H_
@@ -14,6 +11,10 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
+
+#define LCD_CUR_UL 0x0e
+#define LCD_CUR_BS 0x0d
+#define LCD_CUR_OFF 0x0c
 
 class HD44780{
   private:
@@ -30,6 +31,7 @@ class HD44780{
     void changeParam();
     uint8_t param;
     void printMain();
+    void printLogo();
 };
 
 

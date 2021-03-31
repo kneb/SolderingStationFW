@@ -4,9 +4,6 @@
  * Created: 07.02.2021 2:34:45
  *  Author: Neb Konstantin Viktorovich
  */
-#ifndef __AVR_ATmega8A__
-#define __AVR_ATmega8A__
-#endif
 
 #ifndef THERMOFAN_H_
 #define THERMOFAN_H_
@@ -14,7 +11,8 @@
 #include <avr/io.h>
 
 #define TF_HEAT 1
-#define TF_SLEEP 2
+#define TF_ON_HOLDER 2
+
 
 #define GERKON (1 << PINC3)
 

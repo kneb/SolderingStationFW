@@ -4,9 +4,7 @@
  * Created: 05.02.2021 15:57:08
  *  Author: Neb Konstantin Viktorovich
  */ 
-#ifndef __AVR_ATmega8A__
-#define __AVR_ATmega8A__
-#endif
+#define F_CPU 16000000UL
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -21,6 +19,9 @@
 int main(void){
   init_ports();
   lcd.init();
+  lcd.printLogo();
+  _delay_ms(1000);
+  _delay_ms(1000);
   lcd.printMain();
 
   sei();

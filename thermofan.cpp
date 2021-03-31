@@ -8,7 +8,7 @@
 #include "Headers/thermofan.h"
 
 ThermoFan::ThermoFan(){
-  this->fan = 50;
+  this->fan = 98;
   this->setTemp = 250;
   this->currentTemp = 0;
 }

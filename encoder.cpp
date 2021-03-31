@@ -34,20 +34,23 @@ void Encoder::onRotation(bool isClockwise){
     case 1:
       if (isClockwise) thermoFan.fan++; else thermoFan.fan--;
       lcd.goTo(7, 0);
-      sprintf(buf, "%2d", thermoFan.fan);
+      sprintf(buf, "%d", thermoFan.fan);
       lcd.sendString(buf);
+      lcd.goTo(8, 0);
       break;
     case 2:
       if (isClockwise) thermoFan.setTemp++; else thermoFan.setTemp--;
       lcd.goTo(12, 0);
       sprintf(buf, "%03d", thermoFan.setTemp);
       lcd.sendString(buf);
+      lcd.goTo(14, 0);
       break;
     case 3:
       if (isClockwise) solder.setTemp++; else solder.setTemp--;
       lcd.goTo(12, 1);
       sprintf(buf, "%03d", solder.setTemp);
       lcd.sendString(buf);
+      lcd.goTo(14, 1);
       break;
   }
 }
