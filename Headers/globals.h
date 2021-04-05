@@ -35,8 +35,9 @@
 #define PIN_ENCEDER_SW PINC
 #define ENCEDER_SW (1 << PINC4)
 
-#define LED_FEN (1 << PINB4)
-#define LED_SOL (1 << PINB5)
+#define LED_PORT PORTB
+#define LED_FEN (1 << PINB4) //led power termofen (0 - On, 1 - Off)
+#define LED_SOL (1 << PINB5) //led power solder (0 - On, 1 - Off)
 
 extern HD44780 lcd;
 extern Encoder encoder;

@@ -15,6 +15,8 @@
 class Encoder{
   private:
     uint8_t buttonDown;
+    uint8_t isEdit;
+    uint8_t params; 
   public:
     Encoder();
     void getButtonStatus();

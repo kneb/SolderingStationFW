@@ -14,7 +14,7 @@ Encoder::Encoder(){
 
 void Encoder::getButtonStatus(){
   if ((PIN_ENCEDER_SW & ENCEDER_SW) == 0){
-    _delay_ms(10);
+    _delay_ms(10); //time for contact unbounce
     if (((PIN_ENCEDER_SW & ENCEDER_SW) == 0) && (this->buttonDown == 0)){
       this->onClickButton();
       this->buttonDown = 1;
@@ -25,10 +25,31 @@ void Encoder::getButtonStatus(){
 }
 
 void Encoder::onClickButton(){
-  lcd.changeParam();
+  switch (this->params){
+    case 0:
+      if (solder.isPowered == 0){
+        solder.setPowerOn();
+      } else {
+        solder.setPowerOff();
+      }
+    break;
+    case 1:
+
+    break;   
+    default:
+    
+    break;
+  }
 }
 
 void Encoder::onRotation(bool isClockwise){
+  if (this->isEdit == 0) {
+    
+  } else {
+
+  }
+
+  /*
   char buf[4];
   switch (lcd.param){
     case 1:
@@ -53,4 +74,5 @@ void Encoder::onRotation(bool isClockwise){
       lcd.goTo(14, 1);
       break;
   }
+  */
 }

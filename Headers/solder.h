@@ -12,10 +12,14 @@
 
 class Solder{
   private:
+    
   public:
     Solder();
     uint16_t setTemp;
-    uint16_t currentTemp;  
+    uint16_t currentTemp;
+    uint8_t isPowered;
+    void setPowerOn();
+    void setPowerOff();
 };
 
 #endif /* SOLDER_H_ */

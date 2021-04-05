@@ -22,16 +22,17 @@ void init_ports(){
 
   PORTC = 0b00010000;
 
-  MCUCR |= (1 << ISC00)|(1 << ISC10);
+  
+  MCUCR |= (1 << ISC00)|(1 << ISC10); //any logical change on INT0 and INT1
   GICR |= (1 << INT0);
 
-  TCCR0 = (1 << CS00)|(1 << CS02);
+  TCCR0 = (1 << CS00)|(1 << CS02); //tim0 divider 1024
   TIMSK = (1 << TOIE0);
   
 }
 
-ISR(INT0_vect){
-  GICR &= ~(1 << INT0);
+ISR(INT0_vect){ //the encoder has been turned
+  GICR &= ~(1 << INT0); //disable ext.int. on INT0
   uint8_t b = (PINC & 32) >> 5;
   _delay_ms(1);
   uint8_t a = (PIND & 4) >> 2;
@@ -41,15 +42,15 @@ ISR(INT0_vect){
     encoder.onRotation(true);
   }
   GIFR |= (1 << INTF0);
-  GICR |= (1 << INT0);
+  GICR |= (1 << INT0); //enable ext.int. on INT0
 }
 
 ISR(TIMER0_OVF_vect){
   if (tim < 61) {
     tim ++;
-  } else {
+  } else { //The code is executable with a frequency of one second
     tim = 0;
-    PORTB ^= LED_FEN;
+    
   }
 
 }
