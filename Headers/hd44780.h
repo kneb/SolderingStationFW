@@ -28,10 +28,6 @@ class HD44780{
     void sendString(const char* str);
     void clear();
     void goTo(uint8_t x, uint8_t y);
-    void changeParam();
-    uint8_t param;
-    void printMain();
-    void printLogo();
 };
 
 

@@ -16,6 +16,7 @@
 #include <avr/interrupt.h>
 
 #include "hd44780.h"
+#include "lcd.h"
 #include "encoder.h"
 #include "thermofan.h"
 #include "solder.h"
@@ -39,11 +40,12 @@
 #define LED_FEN (1 << PINB4) //led power termofen (0 - On, 1 - Off)
 #define LED_SOL (1 << PINB5) //led power solder (0 - On, 1 - Off)
 
-extern HD44780 lcd;
+extern HD44780 hd44780;
+extern Lcd lcd;
 extern Encoder encoder;
 extern ThermoFan thermoFan;
 extern Solder solder;
 
-void init_ports();
+void init();
 
 #endif /* GLOBALS_H_ */

@@ -25,7 +25,7 @@ void Encoder::getButtonStatus(){
 }
 
 void Encoder::onClickButton(){
-  switch (this->params){
+  switch (lcd.menu.param){
     case 0:
       if (solder.isPowered == 0){
         solder.setPowerOn();
@@ -37,13 +37,13 @@ void Encoder::onClickButton(){
 
     break;   
     default:
-    
+      
     break;
   }
 }
 
 void Encoder::onRotation(bool isClockwise){
-  if (this->isEdit == 0) {
+  if (lcd.menu.isEdit == 0) {
     
   } else {
 

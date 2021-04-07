@@ -17,8 +17,7 @@
 
 
 int main(void){
-  init_ports();
-  lcd.init();
+  init();
   lcd.printLogo();
   _delay_ms(1000);
   _delay_ms(1000);

@@ -19,7 +19,7 @@ const uint8_t otherSymbol[8][8] PROGMEM = {
 };
 
 HD44780::HD44780(){
-  this->param = 1;
+  
 }
 
 void HD44780::init(){
@@ -93,45 +93,4 @@ void HD44780::clear(){
 void HD44780::goTo(uint8_t x, uint8_t y){
   uint8_t addr = 0x80 + 0x40*y + x;
   this->sendCommand(addr);
-}
-
-void HD44780::changeParam(){
-  if (this->param < 3){
-    this->param ++;
-  } else {
-    this->param = 1;
-  }
-  switch (this->param) {
-    case 1:
-      this->goTo(8, 0);
-      this->sendCommand(LCD_CUR_UL);
-      break;
-    case 2:
-      this->goTo(14, 0);
-      this->sendCommand(LCD_CUR_UL);
-      break;
-    case 3:
-      this->goTo(14, 1);
-      this->sendCommand(LCD_CUR_UL);
-      break;
-  }
-}
-
-void HD44780::printMain(){
-  char buf[17];
-  lcd.goTo(0, 0);
-  sprintf(buf, "\x04%03d\x02\x7f\x03%2d%%  %03d\x02", 
-          thermoFan.currentTemp, thermoFan.fan, thermoFan.setTemp);
-  lcd.sendString(buf);
-  lcd.goTo(0, 1);
-  sprintf(buf, "%03d\x02 \x01\x05 \x06  %03d\x02", solder.currentTemp, solder.setTemp);
-  lcd.sendChar(0);
-  lcd.sendString(buf);	
-}  
-
-void HD44780::printLogo(){
-  this->goTo(1, 0);
-  this->sendString("Soldering");
-  this->goTo(3, 1);
-  this->sendString("Station 1.0");
 }

@@ -7,21 +7,23 @@
 
 #include "Headers/globals.h"
 
-HD44780 lcd;
+HD44780 hd44780;
+Lcd lcd;
 Encoder encoder;
 ThermoFan thermoFan;
 Solder solder;
 
 uint8_t tim = 0;
 
-void init_ports(){
+void init(){
   PORTB = 0b00110000;
   DDRB = 0b00110000;
   DDRC = 0b00000100;
   DDRD = 0b11110011;
 
   PORTC = 0b00010000;
-
+  
+  hd44780.init();
   
   MCUCR |= (1 << ISC00)|(1 << ISC10); //any logical change on INT0 and INT1
   GICR |= (1 << INT0);
