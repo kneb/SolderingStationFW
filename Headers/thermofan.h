@@ -23,7 +23,9 @@ class ThermoFan{
     uint8_t fan;
     uint16_t setTemp;
     uint16_t currentTemp;
-    uint8_t status;
+    uint8_t isPowered;
+    void setPowerOn();
+    void setPowerOff();
 };
 
 

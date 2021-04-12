@@ -26,6 +26,7 @@ class HD44780{
     void sendCommand(uint8_t cmd);
     void sendChar(const char chr);
     void sendString(const char* str);
+    void sendStringFlash(const char* str);
     void clear();
     void goTo(uint8_t x, uint8_t y);
 };

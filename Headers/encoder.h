@@ -16,9 +16,9 @@ class Encoder{
   private:
     uint8_t buttonDown;
     void onClickButton();
-    void onRotation(bool isClockwise);
   public:
     Encoder();
+    void onRotation(bool isClockwise);
     void getButtonStatus();
 };
 

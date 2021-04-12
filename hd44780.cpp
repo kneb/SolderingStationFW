@@ -94,3 +94,11 @@ void HD44780::goTo(uint8_t x, uint8_t y){
   uint8_t addr = 0x80 + 0x40*y + x;
   this->sendCommand(addr);
 }
+
+void HD44780::sendStringFlash(const char* str){
+  while (pgm_read_byte(str) != 0)
+  {
+    this->sendChar(pgm_read_byte(str));
+    str ++;
+  }
+}

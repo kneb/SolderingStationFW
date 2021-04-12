@@ -8,7 +8,6 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
-#include <stdio.h>
 #include <avr/interrupt.h>
 
 #include "Headers/globals.h"

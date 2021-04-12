@@ -12,3 +12,11 @@ ThermoFan::ThermoFan(){
   this->setTemp = 250;
   this->currentTemp = 0;
 }
+
+void ThermoFan::setPowerOn(){
+
+}
+
+void ThermoFan::setPowerOff(){
+  
+}

@@ -25,26 +25,37 @@ void Encoder::getButtonStatus(){
 }
 
 void Encoder::onClickButton(){
-  switch (lcd.menu.param){
-    case 0:
-      if (solder.isPowered == 0){
-        solder.setPowerOn();
-      } else {
-        solder.setPowerOff();
-      }
-    break;
-    case 1:
+  if (lcd.menu.level == 0){ //Root menu
+    switch (lcd.menu.param){
+      case 0: //Soldering power 
+        if (solder.isPowered == 0){
+          solder.setPowerOn();
+        } else {
+          solder.setPowerOff();
+        }
+      break;
+      case 1: //Thermofan power
+        if (thermoFan.isPowered == 0){
+          thermoFan.setPowerOn();
+        } else {
+          thermoFan.setPowerOff();
+        }
+      break;
+      case 2:
+        
+      break;   
+      default:
+        
+      break;
+    } 
+  } else {
 
-    break;   
-    default:
-      
-    break;
-  }
+  }  
 }
 
 void Encoder::onRotation(bool isClockwise){
   if (lcd.menu.isEdit == 0) {
-    
+    lcd.changeParam(isClockwise);
   } else {
 
   }
