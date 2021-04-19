@@ -18,8 +18,8 @@
 int main(void){
   init();
   lcd.printLogo();
-  _delay_ms(1000);
-  _delay_ms(1000);
+  _delay_ms(500);
+  // _delay_ms(1000);
   lcd.printMain();
 
   sei();

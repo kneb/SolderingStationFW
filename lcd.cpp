@@ -36,8 +36,12 @@ void Lcd::printMain(){
   itoa(buf, solder.currentTemp, 3);
   hd44780.sendString(buf);
   hd44780.sendStringFlash(PSTR("\x02"));
-  hd44780.goTo(6, 1);
-
+  hd44780.goTo(9, 1);
+  hd44780.sendStringFlash(PSTR("\x06"));
+  hd44780.goTo(12, 1);
+  itoa(buf, solder.setTemp, 3);
+  hd44780.sendString(buf);
+  hd44780.sendStringFlash(PSTR("\x02"));
 }
 
 void Lcd::printLogo(){
@@ -50,6 +54,10 @@ void Lcd::printLogo(){
 
 void Lcd::changeParam(bool isClockwise){
 
+}
+
+void Lcd::printIconsStatus(){
+  
 }
 
 void itoa(char* buf, uint16_t source, uint8_t lenZero){

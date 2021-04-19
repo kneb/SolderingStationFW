@@ -23,6 +23,7 @@ class Lcd{
     void printMain();
     void printLogo();
     void changeParam(bool isClockwise);
+    void printIconsStatus();
 };
 
 void itoa(char* buf, uint16_t source, uint8_t lenZero);
