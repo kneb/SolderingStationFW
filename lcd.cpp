@@ -60,6 +60,10 @@ void Lcd::printIconsStatus(){
   
 }
 
+void Lcd::printMenuCursor(){
+  
+}
+
 void itoa(char* buf, uint16_t source, uint8_t lenZero){
   uint16_t div = 100;
   uint8_t i = 3;
