@@ -10,8 +10,8 @@
 
 Lcd::Lcd(){
   this->menu.isEdit = 0;
-  this->menu.level = 0;
   this->menu.param = 1;
+  this->menu.level = 0;
 }
 
 void Lcd::printMain(){
@@ -52,16 +52,56 @@ void Lcd::printLogo(){
   
 }
 
+/*
 void Lcd::changeParam(bool isClockwise){
 
 }
+*/
 
 void Lcd::printIconsStatus(){
   
 }
 
-void Lcd::printMenuCursor(){
-  
+void Lcd::printMenuCursor(uint8_t cursorType = CURSOR_TYPE_ARROW){
+  uint8_t x = 0;
+  uint8_t y = 0;
+  uint8_t cursorId = 0;
+  if (this->menu.level == 0){
+    switch (this->menu.param){
+      case 1:
+        x = 5; y = 0;
+        cursorId = CURSOR_LEFT_ARROW;
+        break;
+      case 2:
+        x = 10; y = 0;
+        cursorId = CURSOR_LEFT_ARROW;
+        break;
+      case 3:
+        x = 11; y = 0;
+        cursorId = CURSOR_RIGHT_ARROW;
+        break;
+      case 4:
+        x = 11; y = 1;
+        cursorId = CURSOR_RIGHT_ARROW;
+        break;
+      case 5:
+        x = 10; y = 1;
+        cursorId = CURSOR_LEFT_ARROW;
+        break;
+      case 6:
+        x = 5; y = 1;
+        cursorId = CURSOR_LEFT_ARROW;
+        break;        
+    }
+  }    
+  hd44780.goTo(x, y);
+  if (cursorType == CURSOR_TYPE_EMPTY){
+    hd44780.sendChar(0x20);
+  } else if (cursorType == CURSOR_TYPE_ARROW){
+    hd44780.sendChar(cursorId);
+  } else {
+    hd44780.sendChar(cursorType);
+  }  
 }
 
 void itoa(char* buf, uint16_t source, uint8_t lenZero){
