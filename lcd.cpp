@@ -16,32 +16,33 @@ Lcd::Lcd(){
 
 void Lcd::printMain(){
   hd44780.clear();
-  char buf[4];
   hd44780.goTo(0, 0);
   hd44780.sendStringFlash(PSTR("\x04"));
-  itoa(buf, thermoFan.currentTemp, 3);
-  hd44780.sendString(buf);
+  this->printInt(1, 0, thermoFan.currentTemp, 3);
   hd44780.sendStringFlash(PSTR("\x02"));
   hd44780.goTo(6, 0);
   hd44780.sendStringFlash(PSTR("\x03"));
-  itoa(buf, thermoFan.fan, 2);
-  hd44780.sendString(buf);
+  this->printInt(7, 0, thermoFan.fan, 2);
   hd44780.sendStringFlash(PSTR("%"));
-  hd44780.goTo(12, 0);
-  itoa(buf, thermoFan.setTemp, 3);
-  hd44780.sendString(buf);
+  this->printInt(12, 0, thermoFan.temp, 3);
   hd44780.sendStringFlash(PSTR("\x02"));
   hd44780.goTo(0, 1);
   hd44780.sendChar(0);
-  itoa(buf, solder.currentTemp, 3);
-  hd44780.sendString(buf);
+  this->printInt(1, 1, solder.currentTemp, 3);
   hd44780.sendStringFlash(PSTR("\x02"));
   hd44780.goTo(9, 1);
   hd44780.sendStringFlash(PSTR("\x06"));
-  hd44780.goTo(12, 1);
-  itoa(buf, solder.setTemp, 3);
-  hd44780.sendString(buf);
+  this->printInt(12, 1, solder.temp, 3);
   hd44780.sendStringFlash(PSTR("\x02"));
+  
+  this->printMenuCursor(CURSOR_TYPE_ARROW);
+}
+
+void Lcd::printInt(uint8_t x, uint8_t y, uint16_t source, uint8_t len){
+  char buf[4];
+  hd44780.goTo(x, y);
+  itoa(buf, source, len);
+  hd44780.sendString(buf);  
 }
 
 void Lcd::printLogo(){
@@ -49,14 +50,7 @@ void Lcd::printLogo(){
   hd44780.sendStringFlash(PSTR("Soldering"));
   hd44780.goTo(3, 1);
   hd44780.sendStringFlash(PSTR("Station 1.0"));
-  
 }
-
-/*
-void Lcd::changeParam(bool isClockwise){
-
-}
-*/
 
 void Lcd::printIconsStatus(){
   
@@ -66,32 +60,40 @@ void Lcd::printMenuCursor(uint8_t cursorType = CURSOR_TYPE_ARROW){
   uint8_t x = 0;
   uint8_t y = 0;
   uint8_t cursorId = 0;
+  uint8_t left, right;
+  if (this->menu.isEdit == 0){
+    left = CURSOR_LEFT_ARROW;
+    right = CURSOR_RIGHT_ARROW;
+  } else {
+    left = CURSOR_LEFT_ANGLE;
+    right = CURSOR_RIGHT_ANGLE;
+  }
   if (this->menu.level == 0){
     switch (this->menu.param){
+      case 0:
+        x = 5; y = 1;
+        cursorId = left;
+        break;    
       case 1:
         x = 5; y = 0;
-        cursorId = CURSOR_LEFT_ARROW;
+        cursorId = left;
         break;
       case 2:
         x = 10; y = 0;
-        cursorId = CURSOR_LEFT_ARROW;
+        cursorId = left;
         break;
       case 3:
         x = 11; y = 0;
-        cursorId = CURSOR_RIGHT_ARROW;
+        cursorId = right;
         break;
       case 4:
         x = 11; y = 1;
-        cursorId = CURSOR_RIGHT_ARROW;
+        cursorId = right;
         break;
       case 5:
         x = 10; y = 1;
-        cursorId = CURSOR_LEFT_ARROW;
+        cursorId = left;
         break;
-      case 6:
-        x = 5; y = 1;
-        cursorId = CURSOR_LEFT_ARROW;
-        break;        
     }
   }    
   hd44780.goTo(x, y);
@@ -122,4 +124,9 @@ void itoa(char* buf, uint16_t source, uint8_t lenZero){
     i--;
   }
   *buf = '\0';  
+}
+
+void Lcd::swapIsEdit(){
+  this->menu.isEdit ^= 1;
+  this->printMenuCursor(CURSOR_TYPE_ARROW);
 }

@@ -26,58 +26,48 @@ void Encoder::getButtonStatus(){
 
 void Encoder::onClickButton(){
   if (lcd.menu.level == 0){ //Root menu
-    switch (lcd.menu.param){
-      case 6: //Soldering power 
-        if (solder.isPowered == 0){
-          solder.setPowerOn();
-        } else {
-          solder.setPowerOff();
-        }
-      break;
-      case 1: //Thermofan power
-        if (thermoFan.isPowered == 0){
-          thermoFan.setPowerOn();
-        } else {
-          thermoFan.setPowerOff();
-        }
-      break;
-      case 2:
-        
-      break;   
-    } 
+    if (lcd.menu.param == 0){ //Soldering power 
+      sound.beep(300, 1, 0);
+      (solder.isPowered == 0) ? solder.setPowerOn() : solder.setPowerOff();   
+    } else if (lcd.menu.param == 1){ //Thermofan power
+      sound.beep(300, 1, 0);
+      (thermoFan.isPowered == 0) ? thermoFan.setPowerOn() : thermoFan.setPowerOff();     
+    } else if (lcd.menu.param == 5){
+      
+    } else {
+      sound.beep(300, 1, 0);
+      lcd.swapIsEdit();
+    }    
   } else {
 
   }  
 }
 
 void Encoder::onRotation(bool isClockwise){
-  if (lcd.menu.)
-  {
+  if (lcd.menu.isEdit == 0){ //Moving cursors
+    if (lcd.menu.level == 0){ //Root menu
+      lcd.printMenuCursor(CURSOR_TYPE_EMPTY);
+      if (isClockwise == true){       
+        lcd.menu.param = (lcd.menu.param == 5) ? 0 : (lcd.menu.param + 1);
+      } else {
+        lcd.menu.param = (lcd.menu.param == 0) ? 5 : (lcd.menu.param - 1);    
+      }
+      lcd.printMenuCursor(CURSOR_TYPE_ARROW);
+    }
+  } else { //Edit param
+    if (lcd.menu.level == 0){ //Root menu
+      switch (lcd.menu.param){
+        case 2:
+          thermoFan.setFan(isClockwise);
+          break;
+        case 3:
+          thermoFan.setTemp(isClockwise);
+          break;
+        case 4:
+          solder.setTemp(isClockwise);
+          break;  
+      }
+    }    
   }
-  /*
-  char buf[4];
-  switch (lcd.param){
-    case 1:
-      if (isClockwise) thermoFan.fan++; else thermoFan.fan--;
-      lcd.goTo(7, 0);
-      sprintf(buf, "%d", thermoFan.fan);
-      lcd.sendString(buf);
-      lcd.goTo(8, 0);
-      break;
-    case 2:
-      if (isClockwise) thermoFan.setTemp++; else thermoFan.setTemp--;
-      lcd.goTo(12, 0);
-      sprintf(buf, "%03d", thermoFan.setTemp);
-      lcd.sendString(buf);
-      lcd.goTo(14, 0);
-      break;
-    case 3:
-      if (isClockwise) solder.setTemp++; else solder.setTemp--;
-      lcd.goTo(12, 1);
-      sprintf(buf, "%03d", solder.setTemp);
-      lcd.sendString(buf);
-      lcd.goTo(14, 1);
-      break;
-  }
-  */
+ 
 }

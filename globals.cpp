@@ -12,12 +12,13 @@ Lcd lcd;
 Encoder encoder;
 ThermoFan thermoFan;
 Solder solder;
+Sound sound;
 
 uint8_t tim = 0;
 
 void init(){
-  PORTB = 0b00110000;
-  DDRB = 0b00110000;
+  PORTB = 0b00110001;
+  DDRB = 0b00110001;
   DDRC = 0b00000100;
   DDRD = 0b11110011;
 
@@ -48,11 +49,31 @@ ISR(INT0_vect){ //the encoder has been turned
 }
 
 ISR(TIMER0_OVF_vect){
-  if (tim < 61) {
+  sound.getBeep();
+  if (tim < 61){   
     tim ++;
   } else { //The code is executable with a frequency of one second
     tim = 0;
     
   }
+}
 
+void Sound::getBeep(){
+  if (this->beepCount > 0){
+    if (this->beepTim > 0){
+      this->beepTim--;
+    } else {
+      SOUND_PORT ^= SOUND_PIN;
+      this->beepCount--;
+      this->beepTim = (this->beepCount%2 == 0) ? this->beepDurationDelay : this->beepDuration;
+    }
+  }  
+}
+
+void Sound::beep(uint16_t duration_ms=500, uint8_t count=1, uint16_t delay_ms=500){  
+  this->beepDuration = duration_ms/16;
+  this->beepTim = this->beepDuration;
+  this->beepDurationDelay = delay_ms/16;
+  this->beepCount = count*2-1;
+  SOUND_PORT &= ~SOUND_PIN;
 }
