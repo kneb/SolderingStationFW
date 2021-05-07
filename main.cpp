@@ -11,7 +11,6 @@
 #include <avr/interrupt.h>
 
 #include "Headers/globals.h"
-//#include "Headers/hd44780.h"
 #include "Headers/encoder.h"
 
 

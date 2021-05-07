@@ -53,7 +53,17 @@ void Lcd::printLogo(){
 }
 
 void Lcd::printIconsStatus(){
-  
+  hd44780.goTo(6, 1);
+  if ((PORT_VIBRO & VIBRO) == 0){
+    hd44780.sendStringFlash(PSTR("\x01"));
+  } else {
+    hd44780.sendStringFlash(PSTR("\x07"));
+  }
+  if ((PORT_GERKON & GERKON) == 0){ //ThermoFan on stand
+    hd44780.sendStringFlash(PSTR("\x05"));
+  } else {
+    hd44780.sendStringFlash(PSTR("\xc6"));
+  }  
 }
 
 void Lcd::printMenuCursor(uint8_t cursorType = CURSOR_TYPE_ARROW){

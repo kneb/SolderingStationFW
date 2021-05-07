@@ -35,12 +35,12 @@ void Encoder::onClickButton(){
     } else if (lcd.menu.param == 5){
       
     } else {
-      sound.beep(300, 1, 0);
+      sound.beep(200, 1, 0);
       lcd.swapIsEdit();
-    }    
+    }
   } else {
 
-  }  
+  }
 }
 
 void Encoder::onRotation(bool isClockwise){

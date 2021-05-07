@@ -18,7 +18,7 @@ uint8_t tim = 0;
 
 void init(){
   PORTB = 0b00110001;
-  DDRB = 0b00110001;
+  DDRB = 0b00111001;
   DDRC = 0b00000100;
   DDRD = 0b11110011;
 
@@ -31,6 +31,8 @@ void init(){
 
   TCCR0 = (1 << CS00)|(1 << CS02); //tim0 divider 1024
   TIMSK = (1 << TOIE0);
+
+  TCCR2 = (1 << WGM21)|(1 << WGM20)|(1 << CS22)|(0 << CS21)|(0 << CS20);
   
 }
 
@@ -52,6 +54,12 @@ ISR(TIMER0_OVF_vect){
   sound.getBeep();
   if (tim < 61){   
     tim ++;
+    if ((tim % 30) == 0){
+      thermoFan.getStatus();
+      if (lcd.menu.level == 0){
+        lcd.printIconsStatus();
+      }
+    }
   } else { //The code is executable with a frequency of one second
     tim = 0;
     

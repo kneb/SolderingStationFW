@@ -17,6 +17,9 @@
 #define SOL_HEAT_ON 1
 #define SOL_HEAT_SLEEP 2
 
+#define PORT_VIBRO PIND
+#define VIBRO (1 << PIND3)
+
 class Solder{
   private:
     
