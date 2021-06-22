@@ -19,18 +19,23 @@ void ThermoFan::setPowerOn(){
   this->isPowered = TF_HEAT_ON;
   LED_PORT &= ~LED_FEN;
   TCCR2 |= (1 << COM21);
+
+  OCR1AL = 125;
+  TCCR1A |= (1 << COM1A1);
 }
 
 void ThermoFan::setPowerOff(){
   this->isPowered = TF_HEAT_OFF;
   LED_PORT |= LED_FEN;
   TCCR2 &= ~(1 << COM21);
+  TCCR1A &= ~(1 << COM1A1);
 }
 
 void ThermoFan::setPowerSleep(){
   this->isPowered = TF_ON_HOLDER;
   this->fanBuf = this->fan;
   this->setFan((uint8_t)99);
+  TCCR1A &= ~(1 << COM1A1);
 }
 
 void ThermoFan::setFan(uint8_t fan){

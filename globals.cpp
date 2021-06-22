@@ -18,7 +18,7 @@ uint8_t tim = 0;
 
 void init(){
   PORTB = 0b00110001;
-  DDRB = 0b00111001;
+  DDRB = 0b00111111;
   DDRC = 0b00000100;
   DDRD = 0b11110011;
 
@@ -32,7 +32,13 @@ void init(){
   TCCR0 = (1 << CS00)|(1 << CS02); //tim0 divider 1024
   TIMSK = (1 << TOIE0);
 
+  TCCR1A = (1 << WGM10);
+  TCCR1B = (1 << WGM12)|(1 << CS12)|(1 << CS10);
+
   TCCR2 = (1 << WGM21)|(1 << WGM20)|(1 << CS22)|(0 << CS21)|(0 << CS20);
+
+  ADMUX = (1 << REFS1)|(1 << REFS0); //internal 2.56v
+  ADCSRA = (1 << ADEN)|(1 << ADIE)|(1 << ADPS2)|(1 << ADPS1)|(1 << ADPS0); //128kHz
   
 }
 
@@ -60,8 +66,14 @@ ISR(TIMER0_OVF_vect){
         lcd.printIconsStatus();
       }
     }
+    if (tim % 15){
+      ADCSRA |= (1 << ADSC);
+      
+    }
   } else { //The code is executable with a frequency of one second
     tim = 0;
+    lcd.printInt(1, 0, thermoFan.currentTemp, 3);
+    lcd.printInt(1, 1, solder.currentTemp, 3);
     
   }
 }
@@ -84,4 +96,13 @@ void Sound::beep(uint16_t duration_ms=500, uint8_t count=1, uint16_t delay_ms=50
   this->beepDurationDelay = delay_ms/16;
   this->beepCount = count*2-1;
   SOUND_PORT &= ~SOUND_PIN;
+}
+
+ISR(ADC_vect){
+  if ((ADMUX & 1) == 1){
+    thermoFan.currentTemp = ADCW;
+  } else {
+    solder.currentTemp = ADCW;
+  }
+  ADMUX ^= 1;
 }
