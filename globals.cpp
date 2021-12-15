@@ -6,6 +6,8 @@
  */
 
 #include "Headers/globals.h"
+#include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 
 HD44780 hd44780;
 Lcd lcd;
@@ -15,6 +17,15 @@ Solder solder;
 Sound sound;
 
 uint8_t tim = 0;
+
+uint16_t refFenTemp1 EEMEM = 10;
+uint16_t refFenADC1 EEMEM = 10;
+uint16_t refFenTemp2 EEMEM = 200;
+uint16_t refFenADC2 EEMEM = 500;
+uint16_t refSolTemp1 EEMEM = 10;
+uint16_t refSolADC1 EEMEM = 10;
+uint16_t refSolTemp2 EEMEM = 200;
+uint16_t refSolADC2 EEMEM = 500;
 
 void init(){
   PORTB = 0b00110001;
@@ -56,7 +67,7 @@ ISR(INT0_vect){ //the encoder has been turned
   GICR |= (1 << INT0); //enable ext.int. on INT0
 }
 
-ISR(TIMER0_OVF_vect){
+ISR(TIMER0_OVF_vect){ //Timer0 at frequency ~61Hz (~16,4ms)
   sound.getBeep();
   if (tim < 61){   
     tim ++;
@@ -66,8 +77,8 @@ ISR(TIMER0_OVF_vect){
         lcd.printIconsStatus();
       }
     }
-    if (tim % 15){
-      ADCSRA |= (1 << ADSC);
+    if ((tim % 15) == 0){
+      ADCSRA |= (1 << ADSC); //start ADC converter
       
     }
   } else { //The code is executable with a frequency of one second
@@ -100,7 +111,7 @@ void Sound::beep(uint16_t duration_ms=500, uint8_t count=1, uint16_t delay_ms=50
 
 ISR(ADC_vect){
   if ((ADMUX & 1) == 1){
-    thermoFan.currentTemp = ADCW;
+    thermoFan.currentTemp = ADCW/1.5;
   } else {
     solder.currentTemp = ADCW;
   }

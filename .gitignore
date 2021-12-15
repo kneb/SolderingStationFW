@@ -1,3 +1,4 @@
+.cache
 .vscode
 .vs
 Build
@@ -6,3 +7,5 @@ Release
 *.cppproj
 *.componentinfo.xml
 *.atsln
+*.txt
+*.json

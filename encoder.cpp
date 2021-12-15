@@ -32,7 +32,7 @@ void Encoder::onClickButton(){
     } else if (lcd.menu.param == 1){ //Thermofan power
       sound.beep(300, 1, 0);
       (thermoFan.isPowered == 0) ? thermoFan.setPowerOn() : thermoFan.setPowerOff();     
-    } else if (lcd.menu.param == 5){
+    } else if (lcd.menu.param == 5){ // 
       
     } else {
       sound.beep(200, 1, 0);
@@ -67,7 +67,7 @@ void Encoder::onRotation(bool isClockwise){
           solder.setTemp(isClockwise);
           break;  
       }
-    }    
+    }
   }
  
 }
