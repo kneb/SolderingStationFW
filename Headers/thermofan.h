@@ -9,6 +9,7 @@
 #define THERMOFAN_H_
 
 #include <avr/io.h>
+#include <avr/eeprom.h>
 
 #define MAX_TFAN_TEMP 450
 #define MIN_TFAN_TEMP 50
@@ -23,12 +24,23 @@
 class ThermoFan{
   private:
   public:
-    ThermoFan();
+    static uint16_t arefTemp1 EEMEM; 
+    static uint16_t arefTemp2 EEMEM;
+    static uint16_t arefAdc1 EEMEM;
+    static uint16_t arefAdc2 EEMEM;
     uint8_t fan;
     uint8_t fanBuf;
     uint16_t temp;
     uint16_t currentTemp;
     uint8_t isPowered;
+    float k;
+    float b;
+    uint16_t refTemp1; 
+    uint16_t refTemp2;
+    uint16_t refAdc1;
+    uint16_t refAdc2;
+
+    ThermoFan();
     void setPowerOn();
     void setPowerOff();
     void setPowerSleep();
@@ -37,6 +49,9 @@ class ThermoFan{
     void setTemp(uint16_t temp);
     void setTemp(bool isClockwise);
     void getStatus();
+    void readEeprom();
+    void tempConversion(uint16_t adc);
+
 };
 
 

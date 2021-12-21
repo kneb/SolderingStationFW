@@ -7,12 +7,32 @@
 
 #include "Headers/globals.h"
 #include "Headers/thermofan.h"
+#include <avr/eeprom.h>
+
+uint16_t ThermoFan::arefTemp1 EEMEM = 10;
+uint16_t ThermoFan::arefTemp2 EEMEM = 200;
+uint16_t ThermoFan::arefAdc1 EEMEM = 10;
+uint16_t ThermoFan::arefAdc2 EEMEM = 500;
 
 ThermoFan::ThermoFan(){
   this->fan = 50;
   this->temp = 150;
   this->currentTemp = 0;
   OCR2 = this->fan*2 + this->fan/2;
+}
+
+void ThermoFan::readEeprom(){
+  this->refTemp1 = eeprom_read_word(&this->arefTemp1);
+  this->refTemp2 = eeprom_read_word(&this->arefTemp2);
+  this->refAdc1 = eeprom_read_word(&this->arefAdc1);
+  this->refAdc2 = eeprom_read_word(&this->arefAdc2);
+  if ((this->refAdc2-this->refAdc1) != 0){
+    this->k = (float)(this->refTemp2-this->refTemp1) / 
+              (this->refAdc2-this->refAdc1);
+  } else {
+    this->k = 1.;
+  }
+  this->b = this->refTemp2 - this->k*this->refAdc2;
 }
 
 void ThermoFan::setPowerOn(){
@@ -90,3 +110,6 @@ void ThermoFan::getStatus(){
   }
 }
 
+void ThermoFan::tempConversion(uint16_t adc){
+  this->currentTemp = this->k*adc + this->b;
+}

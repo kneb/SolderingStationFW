@@ -7,7 +7,6 @@
 
 #include "Headers/globals.h"
 #include <avr/pgmspace.h>
-#include <avr/eeprom.h>
 
 HD44780 hd44780;
 Lcd lcd;
@@ -17,15 +16,6 @@ Solder solder;
 Sound sound;
 
 uint8_t tim = 0;
-
-uint16_t refFenTemp1 EEMEM = 10;
-uint16_t refFenADC1 EEMEM = 10;
-uint16_t refFenTemp2 EEMEM = 200;
-uint16_t refFenADC2 EEMEM = 500;
-uint16_t refSolTemp1 EEMEM = 10;
-uint16_t refSolADC1 EEMEM = 10;
-uint16_t refSolTemp2 EEMEM = 200;
-uint16_t refSolADC2 EEMEM = 500;
 
 void init(){
   PORTB = 0b00110001;
@@ -111,7 +101,7 @@ void Sound::beep(uint16_t duration_ms=500, uint8_t count=1, uint16_t delay_ms=50
 
 ISR(ADC_vect){
   if ((ADMUX & 1) == 1){
-    thermoFan.currentTemp = ADCW/1.5;
+    thermoFan.tempConversion(ADCW);
   } else {
     solder.currentTemp = ADCW;
   }

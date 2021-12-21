@@ -63,5 +63,7 @@ extern Solder solder;
 extern Sound sound;
 
 void init();
+void calcK(int16_t *k, int16_t *b, uint16_t *adc1, uint16_t *adc2, 
+            uint16_t *temp1, uint16_t *temp2);
 
 #endif /* GLOBALS_H_ */

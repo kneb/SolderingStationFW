@@ -17,13 +17,14 @@ SRCOBJ := $(addprefix $(BUILDDIR)/, $(OBJECTS))
 .PHONY: all clean
 
 .cpp.o:
-	@$(COMPILER) $(ARGS) -c $< -o $(BUILDDIR)/$@
-	@echo "Compile $< --> $(BUILDDIR)/$@"
+	$(COMPILER) $(ARGS) -c $< -o $(BUILDDIR)/$@
+#	@echo "Compile $< --> $(BUILDDIR)/$@"
 
 all: $(OBJECTS)
 	@$(COMPILER) $(ARGS) $(SRCOBJ) -o $(BUILDDIR)/$(OUTNAME).elf
 	@rm -f $(BUILDDIR)/$(OUTNAME).hex
 	@avr-objcopy -j .text -j .data -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).hex
+	@avr-objcopy -j .eeprom -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).eep
 	@avr-size --format=avr --mcu=$(DEVICE) $(BUILDDIR)/$(OUTNAME).elf
 	@echo "Build is Ok $(BUILDDIR)/$(OUTNAME).hex"
 
