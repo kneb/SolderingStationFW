@@ -68,13 +68,15 @@ ISR(TIMER0_OVF_vect){ //Timer0 at frequency ~61Hz (~16,4ms)
       }
     }
     if ((tim % 15) == 0){
-      ADCSRA |= (1 << ADSC); //start ADC converter
+    //  ADCSRA |= (1 << ADSC); //start ADC converter
       
     }
   } else { //The code is executable with a frequency of one second
     tim = 0;
-    lcd.printInt(1, 0, thermoFan.currentTemp, 3);
-    lcd.printInt(1, 1, solder.currentTemp, 3);
+    if (lcd.menu.level == 0){
+      lcd.printInt(1, 0, thermoFan.currentTemp, 3);
+      lcd.printInt(1, 1, solder.currentTemp, 3);
+    }    
     
   }
 }

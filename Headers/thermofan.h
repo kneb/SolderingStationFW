@@ -24,10 +24,13 @@
 class ThermoFan{
   private:
   public:
-    static uint16_t arefTemp1 EEMEM; 
-    static uint16_t arefTemp2 EEMEM;
-    static uint16_t arefAdc1 EEMEM;
-    static uint16_t arefAdc2 EEMEM;
+    static const uint16_t EEMEM arefTemp1; 
+    static const uint16_t EEMEM arefTemp2;
+    static const uint16_t EEMEM arefAdc1;
+    static const uint16_t EEMEM arefAdc2;
+    static const uint16_t EEMEM atempSets;
+    static const uint8_t EEMEM afanSets;
+
     uint8_t fan;
     uint8_t fanBuf;
     uint16_t temp;
@@ -51,7 +54,8 @@ class ThermoFan{
     void getStatus();
     void readEeprom();
     void tempConversion(uint16_t adc);
-
+    void atributesConversion();
+    void setEtalon(uint8_t n, bool isClockwise);
 };
 
 
