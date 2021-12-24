@@ -24,7 +24,7 @@ const uint16_t curPosCalibration[5] PROGMEM = {
 Lcd::Lcd(){
   this->menu.isEdit = 0;
   this->menu.param = 1;
-  this->menu.level = 0;
+  this->menu.level = 255;
 }
 
 void Lcd::printMain(){
@@ -64,8 +64,9 @@ void Lcd::printMenu(){
 }
 
 void Lcd::printCalibration(uint8_t calibrationMenu = CALIBRATION_THERMOFAN){
-  uint8_t temp1;
-  uint8_t temp2;
+  uint16_t temp;
+  uint16_t temp1;
+  uint16_t temp2;
   uint16_t adc1;
   uint16_t adc2;
   if (calibrationMenu == CALIBRATION_THERMOFAN){
@@ -73,22 +74,28 @@ void Lcd::printCalibration(uint8_t calibrationMenu = CALIBRATION_THERMOFAN){
     temp2 = thermoFan.refTemp2;
     adc1 = thermoFan.refAdc1;
     adc2 = thermoFan.refAdc2;
+    temp = thermoFan.currentTemp;
+    thermoFan.setPower((uint8_t)20);
   } else {
-     
+    temp1 = solder.refTemp1;
+    temp2 = solder.refTemp2;
+    adc1 = solder.refAdc1;
+    adc2 = solder.refAdc2;
+    temp = solder.currentTemp;
   }
-  uint8_t temp;
+
   cli();
   hd44780.clear();
   this->printInt(0, 0, temp1, 3);
   hd44780.sendStringFlash(PSTR("\x02"));
   this->printInt(5, 0, adc1, 4);
   hd44780.sendChar(calibrationMenu);
-  this->printInt(10, 0, thermoFan.currentTemp, 3);
+  this->printInt(10, 0, temp, 3);
   hd44780.sendStringFlash(PSTR("\x02 x"));
   this->printInt(0, 1, temp2, 3);
   hd44780.sendStringFlash(PSTR("\x02"));
   this->printInt(5, 1, adc2, 4);
-  this->printInt(10, 1, thermoFan.fan, 3);
+  this->printInt(10, 1, 20, 3);
   hd44780.sendStringFlash(PSTR("% s"));
   this->printMenuCursor(CURSOR_TYPE_ARROW);
   sei();

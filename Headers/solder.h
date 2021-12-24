@@ -22,12 +22,23 @@
 
 class Solder{
   private:
-    
   public:
+    static const uint16_t EEMEM arefTemp1; 
+    static const uint16_t EEMEM arefTemp2;
+    static const uint16_t EEMEM arefAdc1;
+    static const uint16_t EEMEM arefAdc2;
+    static const uint16_t EEMEM atempSets;
     Solder();
     uint16_t temp;
     uint16_t currentTemp;
     uint8_t isPowered;
+    float k;
+    float b;
+    uint16_t refTemp1; 
+    uint16_t refTemp2;
+    uint16_t refAdc1;
+    uint16_t refAdc2;
+    uint16_t adc;
     void setPowerOn();
     void setPowerOff();
     void setTemp(uint16_t temp);

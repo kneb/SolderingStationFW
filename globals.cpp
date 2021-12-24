@@ -33,8 +33,9 @@ void init(){
   TCCR0 = (1 << CS00)|(1 << CS02); //tim0 divider 1024
   TIMSK = (1 << TOIE0);
 
-  TCCR1A = (1 << WGM10);
-  TCCR1B = (1 << WGM12)|(1 << CS12)|(1 << CS10);
+  TCCR1A = (1 << WGM11);
+  TCCR1B = (1 << WGM13)|(1 << WGM12)|(1 << CS12)|(1 << CS10);
+  ICR1 = 15625;
 
   TCCR2 = (1 << WGM21)|(1 << WGM20)|(1 << CS22)|(0 << CS21)|(0 << CS20);
 
@@ -73,10 +74,19 @@ ISR(TIMER0_OVF_vect){ //Timer0 at frequency ~61Hz (~16,4ms)
     }
   } else { //The code is executable with a frequency of one second
     tim = 0;
-    if (lcd.menu.level == 0){
+    if (lcd.menu.level == 0){ //Dashboard
       lcd.printInt(1, 0, thermoFan.currentTemp, 3);
       lcd.printInt(1, 1, solder.currentTemp, 3);
-    }    
+    } else if (lcd.menu.level == 3){ //Calibration menu thermofan
+      lcd.printInt(10, 0, thermoFan.currentTemp, 3);
+      if(lcd.menu.isEdit == 1){
+        if (lcd.menu.param == 0){
+          lcd.printInt(5, 1, thermoFan.adc, 4);
+        } else if (lcd.menu.param == 1) {
+          lcd.printInt(5, 0, thermoFan.adc, 4);
+        }                  
+      }
+    }      
     
   }
 }

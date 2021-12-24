@@ -5,8 +5,15 @@
  *  Author: Neb Konstantin Viktorovich
  */ 
 
+#include <avr/eeprom.h>
 #include "Headers/globals.h"
 #include "Headers/solder.h"
+
+const uint16_t EEMEM Solder::arefTemp1 = 20;
+const uint16_t EEMEM Solder::arefTemp2 = 150;
+const uint16_t EEMEM Solder::arefAdc1 = 100;
+const uint16_t EEMEM Solder::arefAdc2 = 500;
+const uint16_t EEMEM Solder::atempSets = 250;
 
 Solder::Solder(){
   this->currentTemp = 0;
