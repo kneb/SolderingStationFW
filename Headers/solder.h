@@ -9,6 +9,7 @@
 #define SOLDER_H_
 
 #include <avr/io.h>
+#include <avr/eeprom.h>
 
 #define MAX_SOLDER_TEMP 410
 #define MIN_SOLDER_TEMP 50
@@ -23,11 +24,11 @@
 class Solder{
   private:
   public:
-    static const uint16_t EEMEM arefTemp1; 
-    static const uint16_t EEMEM arefTemp2;
-    static const uint16_t EEMEM arefAdc1;
-    static const uint16_t EEMEM arefAdc2;
-    static const uint16_t EEMEM atempSets;
+    static uint16_t EEMEM arefTemp1; 
+    static uint16_t EEMEM arefTemp2;
+    static uint16_t EEMEM arefAdc1;
+    static uint16_t EEMEM arefAdc2;
+    static uint16_t EEMEM atempSets;
     Solder();
     uint16_t temp;
     uint16_t currentTemp;
@@ -39,10 +40,20 @@ class Solder{
     uint16_t refAdc1;
     uint16_t refAdc2;
     uint16_t adc;
+    uint8_t power;
     void setPowerOn();
     void setPowerOff();
     void setTemp(uint16_t temp);
     void setTemp(bool isClockwise);
+    void setPowerSleep();
+    void setPower(uint8_t power);
+    void setPower(bool isClockwise);
+    void tempConversion(uint16_t adc);
+    void atributesConversion();
+    void setEtalon(bool isClockwise);
+    void fixEtalon();
+    void readEeprom();
+    void updateEeprom();
 };
 
 #endif /* SOLDER_H_ */

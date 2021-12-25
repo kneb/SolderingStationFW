@@ -5,20 +5,18 @@
  *  Author: Neb Konstantin Viktorovich
  */ 
 
-#include <avr/eeprom.h>
 #include "Headers/globals.h"
 #include "Headers/solder.h"
 
-const uint16_t EEMEM Solder::arefTemp1 = 20;
-const uint16_t EEMEM Solder::arefTemp2 = 150;
-const uint16_t EEMEM Solder::arefAdc1 = 100;
-const uint16_t EEMEM Solder::arefAdc2 = 500;
-const uint16_t EEMEM Solder::atempSets = 250;
+uint16_t EEMEM Solder::arefTemp1 = 20;
+uint16_t EEMEM Solder::arefTemp2 = 150;
+uint16_t EEMEM Solder::arefAdc1 = 100;
+uint16_t EEMEM Solder::arefAdc2 = 500;
+uint16_t EEMEM Solder::atempSets = 250;
 
 Solder::Solder(){
   this->currentTemp = 0;
-  this->temp = 250;
-  this->isPowered = 0;
+  this->isPowered = SOL_HEAT_OFF;
 }
 
 void Solder::setPowerOn(){
@@ -46,4 +44,84 @@ void Solder::setTemp(bool isClockwise){
       this->setTemp(this->temp-5);
     }
   }
+}
+
+void Solder::setPowerSleep(){
+
+}
+
+void Solder::setPower(uint8_t power){
+  this->power = power;
+}
+
+void Solder::setPower(bool isClockwise){
+  if (isClockwise){
+    if (this->power < 100){
+      this->setPower(++this->power);
+    }
+  } else {
+    if (this->power > 1){
+      this->setPower(--this->power);
+    }
+  }
+  lcd.printInt(10, 1, this->power, 3);
+}
+
+void Solder::tempConversion(uint16_t adc){
+  this->currentTemp = this->k*adc + this->b;
+  this->adc = adc;
+}
+
+void Solder::atributesConversion(){
+  if ((this->refAdc2-this->refAdc1) != 0){
+    this->k = (float)(this->refTemp2-this->refTemp1) / 
+              (this->refAdc2-this->refAdc1);
+  } else {
+    this->k = 1.;
+  }
+  this->b = this->refTemp2 - this->k*this->refAdc2;
+}
+
+void Solder::setEtalon(bool isClockwise){
+  if (lcd.menu.param == 1){
+    if (isClockwise){
+      this->refTemp1 += 1;
+    } else {
+      this->refTemp1 -= 1;
+    }
+    lcd.printInt(0, 0, this->refTemp1, 3);
+  } else {
+    if (isClockwise){
+      this->refTemp2 += 1;
+    } else {
+      this->refTemp2 -= 1;
+    }
+    lcd.printInt(0, 1, this->refTemp2, 3);
+  }
+}
+
+void Solder::fixEtalon(){
+  if (lcd.menu.param == 1){
+    this->refAdc1 = this->adc;
+  } else if (lcd.menu.param == 0) {
+    this->refAdc2 = this->adc;
+  }
+  this->atributesConversion();
+}
+
+void Solder::readEeprom(){
+  this->temp = eeprom_read_word(&Solder::atempSets);
+  this->refTemp1 = eeprom_read_word(&Solder::arefTemp1);
+  this->refTemp2 = eeprom_read_word(&Solder::arefTemp2);
+  this->refAdc1 = eeprom_read_word(&Solder::arefAdc1);
+  this->refAdc2 = eeprom_read_word(&Solder::arefAdc2);
+  this->atributesConversion();
+}
+
+void Solder::updateEeprom(){
+  eeprom_update_word(&Solder::arefAdc1, this->refAdc1);
+  eeprom_update_word(&Solder::arefAdc2, this->refAdc2);
+  eeprom_update_word(&Solder::arefTemp1, this->refTemp1);
+  eeprom_update_word(&Solder::arefTemp2, this->refTemp2);
+  sound.beep(400, 2, 500);
 }

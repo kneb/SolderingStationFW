@@ -5,7 +5,6 @@
  *  Author: Neb Konstantin Viktorovich
  */
 
-#include <avr/eeprom.h>
 #include "Headers/globals.h"
 #include "Headers/thermofan.h"
 
@@ -17,10 +16,8 @@ uint16_t EEMEM ThermoFan::atempSets = 250;
 uint8_t EEMEM ThermoFan::afanSets = 50;
 
 ThermoFan::ThermoFan(){
- // this->fan = 50;
-//  this->temp = 150;
-//  this->currentTemp = 0;
-//  OCR2 = this->fan*2 + this->fan/2;
+  this->currentTemp = 0;
+  this->isPowered = TF_HEAT_OFF;
 }
 
 void ThermoFan::readEeprom(){

@@ -18,6 +18,7 @@ int main(void){
   init();
   lcd.printLogo();
   thermoFan.readEeprom();
+  solder.readEeprom();
   _delay_ms(500); // select a delay for the logo display
   lcd.menu.level = 0;
   lcd.printMain();

@@ -7,8 +7,11 @@ OUTNAME = ssfw
 DEVICE = atmega8
 CLOCK = 16000000
 COMPILER = avr-g++
-#ARGS = -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE)
-ARGS = -Wall -Os -mmcu=$(DEVICE)
+#-DF_CPU=$(CLOCK) 
+#ARGS = -Wall -Os -mmcu=$(DEVICE)
+
+ARGS = -mmcu=$(DEVICE) -std=c++14 -g -Os -Wall -Wextra -pedantic -c -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto
+LINK = -mmcu=$(DEVICE) -Wall -Wextra -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -lm
 
 SRCC := $(wildcard *.cpp)
 OBJECTS := $(patsubst %.cpp,%.o,$(SRCC))
@@ -21,10 +24,10 @@ SRCOBJ := $(addprefix $(BUILDDIR)/, $(OBJECTS))
 #	@echo "Compile $< --> $(BUILDDIR)/$@"
 
 all: $(OBJECTS)
-	@$(COMPILER) $(ARGS) $(SRCOBJ) -o $(BUILDDIR)/$(OUTNAME).elf
+	$(COMPILER) $(LINK) $(SRCOBJ) -o $(BUILDDIR)/$(OUTNAME).elf
 	@rm -f $(BUILDDIR)/$(OUTNAME).hex
 	@avr-objcopy -j .text -j .data -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).hex
-	@avr-objcopy -j .eeprom -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).eep
+	@avr-objcopy -j .eeprom -O binary $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).bin
 	@avr-size --format=avr --mcu=$(DEVICE) $(BUILDDIR)/$(OUTNAME).elf
 	@echo "Build is Ok $(BUILDDIR)/$(OUTNAME).hex"
 

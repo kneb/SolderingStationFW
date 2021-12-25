@@ -71,10 +71,26 @@ void Encoder::onClickButton(){
       break;
     case 2: //Calibration menu Solder
       switch(lcd.menu.param){
+        case 0: //Set etalon2
+        case 1: //Set etalon1
+          sound.beep(200, 1, 0);
+          lcd.swapIsEdit();
+          if (lcd.menu.isEdit == 0) {
+            thermoFan.fixEtalon();
+          }
+          break;
+        case 4: //Set power
+          sound.beep(200, 1, 0);
+          lcd.swapIsEdit();
+          break;
         case 2: //Exit the calibration menu
+          solder.readEeprom();
           lcd.menu.level = 1;
           lcd.menu.param = 0;
           lcd.printMenu();
+          break;
+        case 3: //Save etalons to eeprom
+          solder.updateEeprom();
           break;
       }      
       break;
@@ -157,6 +173,18 @@ void Encoder::onRotation(bool isClockwise){
           break;
         case 4: //Changed power
           thermoFan.setPower(isClockwise);
+          break;
+      }
+    } else if (lcd.menu.level == 2){ //Calibration menu Solder
+      switch (lcd.menu.param){
+        case 0: //Changed etalon2
+          solder.setEtalon(isClockwise);
+          break;
+        case 1: //Changed etalon1
+          solder.setEtalon(isClockwise);
+          break;
+        case 4: //Changed power
+          solder.setPower(isClockwise);
           break;
       }
     }

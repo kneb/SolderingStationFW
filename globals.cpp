@@ -69,7 +69,7 @@ ISR(TIMER0_OVF_vect){ //Timer0 at frequency ~61Hz (~16,4ms)
       }
     }
     if ((tim % 15) == 0){
-    //  ADCSRA |= (1 << ADSC); //start ADC converter
+      ADCSRA |= (1 << ADSC); //start ADC converter
       
     }
   } else { //The code is executable with a frequency of one second
@@ -86,7 +86,16 @@ ISR(TIMER0_OVF_vect){ //Timer0 at frequency ~61Hz (~16,4ms)
           lcd.printInt(5, 0, thermoFan.adc, 4);
         }                  
       }
-    }      
+    } else if (lcd.menu.level == 2){ //Calibration menu solder
+      lcd.printInt(10, 0, solder.currentTemp, 3);
+      if(lcd.menu.isEdit == 1){
+        if (lcd.menu.param == 0){
+          lcd.printInt(5, 1, solder.adc, 4);
+        } else if (lcd.menu.param == 1) {
+          lcd.printInt(5, 0, solder.adc, 4);
+        }                  
+      }
+    }     
     
   }
 }
@@ -115,7 +124,7 @@ ISR(ADC_vect){
   if ((ADMUX & 1) == 1){
     thermoFan.tempConversion(ADCW);
   } else {
-    solder.currentTemp = ADCW;
+    solder.tempConversion(ADCW);
   }
   ADMUX ^= 1;
 }

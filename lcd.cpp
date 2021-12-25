@@ -82,6 +82,7 @@ void Lcd::printCalibration(uint8_t calibrationMenu = CALIBRATION_THERMOFAN){
     adc1 = solder.refAdc1;
     adc2 = solder.refAdc2;
     temp = solder.currentTemp;
+    solder.setPower((uint8_t)20);
   }
 
   cli();
