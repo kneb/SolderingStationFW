@@ -36,14 +36,12 @@ void ThermoFan::setPowerOn(){
   LED_PORT &= ~LED_FEN; //Led on
   TCCR2 |= (1 << COM21); //PWM Fan on
 
-  OCR1A = 312;
   TCCR1A |= (1 << COM1A1); //PWM Temp on
 }
 
 void ThermoFan::setPowerOff(){
   this->isPowered = TF_HEAT_OFF;
   LED_PORT |= LED_FEN; //Led off
-  TCCR2 &= ~(1 << COM21); //PWM Fan off
   TCCR1A &= ~(1 << COM1A1); //PWM Temp off
 }
 
@@ -54,20 +52,27 @@ void ThermoFan::setPowerSleep(){
   TCCR1A &= ~(1 << COM1A1); //PWM Temp off
 }
 
+void ThermoFan::setPowerFixOnOff(){
+  if (this->isPowered != 3) { //If power off, then power set on
+    this->isPowered = TF_HEAT_ON_FIX_POWER;
+    LED_PORT &= ~LED_FEN; //Led on
+
+  } else {
+    this->setPowerOff();
+  }
+}
+
 void ThermoFan::setFan(uint8_t fan){
   this->fan = fan;
     lcd.printInt(7, 0, fan, 3, false);
-    if ((fan > 97) && (fan < 100)){
+    if (fan < 100){
       hd44780.sendStringFlash(PSTR("%"));
     }
   this->setFanPWM();
 }
 
 void ThermoFan::setFanPWM(){
-  if (this->fan==100){
-    OCR2 = 255;
-  } else
-  OCR2 = this->fan*2 + this->fan/2;
+  OCR2 = this->fan*2 + this->fan/2 + this->fan/20;
 }
 
 void ThermoFan::setFan(bool isClockwise){
@@ -166,6 +171,7 @@ void ThermoFan::updateEeprom(){
 
 void ThermoFan::setPower(uint8_t power){
   this->power = power;
+  OCR1A = power*156 + power/4;
 }
 
 void ThermoFan::setPower(bool isClockwise){
@@ -180,5 +186,3 @@ void ThermoFan::setPower(bool isClockwise){
   }
   lcd.printInt(10, 1, this->power, 3);
 }
-
-

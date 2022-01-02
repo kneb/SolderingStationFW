@@ -21,12 +21,19 @@ Solder::Solder(){
 
 void Solder::setPowerOn(){
   this->isPowered = SOL_HEAT_ON;
-  LED_PORT &= ~LED_SOL;
+  LED_PORT &= ~LED_SOL; //Led solder on
+  TCCR1A |= (1 << COM1B1); //PWM Temp on
 }
 
 void Solder::setPowerOff(){
   this->isPowered = SOL_HEAT_OFF;
-  LED_PORT |= LED_SOL;
+  LED_PORT |= LED_SOL; //Led solder off
+  TCCR1A &= ~(1 << COM1B1); //PWM Temp off
+}
+
+void Solder::setPowerSleep(){
+  this->isPowered = SOL_HEAT_SLEEP;
+  TCCR1A &= ~(1 << COM1B1); //PWM Temp off
 }
 
 void Solder::setTemp(uint16_t temp){
@@ -46,12 +53,9 @@ void Solder::setTemp(bool isClockwise){
   }
 }
 
-void Solder::setPowerSleep(){
-
-}
-
 void Solder::setPower(uint8_t power){
   this->power = power;
+  OCR1B = 156*power;
 }
 
 void Solder::setPower(bool isClockwise){

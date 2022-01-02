@@ -22,7 +22,6 @@ void init(){
   DDRB = 0b00111111;
   DDRC = 0b00000100;
   DDRD = 0b11110011;
-
   PORTC = 0b00010000;
   
   hd44780.init();
@@ -31,13 +30,14 @@ void init(){
   GICR |= (1 << INT0);
 
   TCCR0 = (1 << CS00)|(1 << CS02); //tim0 divider 1024
-  TIMSK = (1 << TOIE0);
+  TIMSK = (1 << TOIE0)|(1 << OCIE1B)|(1 << TOIE1);
 
   TCCR1A = (1 << WGM11);
   TCCR1B = (1 << WGM13)|(1 << WGM12)|(1 << CS12)|(1 << CS10);
-  ICR1 = 15625;
+  ICR1 = 15624;
+  OCR1B = 15600;
 
-  TCCR2 = (1 << WGM21)|(1 << WGM20)|(1 << CS22)|(0 << CS21)|(0 << CS20);
+  TCCR2 = (1 << WGM21)|(1 << WGM20)|(1 << CS22)|(1 << CS21);
 
   ADMUX = (1 << REFS1)|(1 << REFS0); //internal 2.56v
   ADCSRA = (1 << ADEN)|(1 << ADIE)|(1 << ADPS2)|(1 << ADPS1)|(1 << ADPS0); //128kHz
@@ -69,7 +69,6 @@ ISR(TIMER0_OVF_vect){ //Timer0 at frequency ~61Hz (~16,4ms)
       }
     }
     if ((tim % 15) == 0){
-      ADCSRA |= (1 << ADSC); //start ADC converter
       
     }
   } else { //The code is executable with a frequency of one second
@@ -105,7 +104,7 @@ void Sound::getBeep(){
     if (this->beepTim > 0){
       this->beepTim--;
     } else {
-      SOUND_PORT ^= SOUND_PIN;
+      SOUND_PORT |= SOUND_PIN;
       this->beepCount--;
       this->beepTim = (this->beepCount%2 == 0) ? this->beepDurationDelay : this->beepDuration;
     }
@@ -126,5 +125,16 @@ ISR(ADC_vect){
   } else {
     solder.tempConversion(ADCW);
   }
-  ADMUX ^= 1;
+}
+
+ISR(TIMER1_COMPB_vect){
+  _delay_ms(1);
+  ADMUX &= 0xFE;
+  ADCSRA |= (1 << ADSC); //start ADC converter
+}
+
+ISR(TIMER1_OVF_vect){
+  _delay_ms(1);
+  ADMUX |= 1;
+  ADCSRA |= (1 << ADSC); //start ADC converter
 }

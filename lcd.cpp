@@ -17,8 +17,8 @@ const uint16_t curPosDashboard[6] PROGMEM = {
 const uint16_t curPosRootMenu[5] PROGMEM = {
   0x6100, 0x6000, 0xD000, 0xE001, 0xD100
 };
-const uint16_t curPosCalibration[5] PROGMEM = {
-  0x4100, 0x4000, 0xE001, 0xE101, 0x9101
+const uint16_t curPosCalibration[6] PROGMEM = {
+  0x4100, 0x4000, 0xE001, 0xE101, 0x915E, 0x9101
 };
 
 Lcd::Lcd(){
@@ -145,8 +145,11 @@ void Lcd::printMenuCursor(uint8_t cursorType = CURSOR_TYPE_ARROW){
       break;
   } 
   uint8_t x = buf >> 12;
-  uint8_t y = (buf >> 8) & 0x0f;
-  uint8_t cursorId = pgm_read_byte(&curType[(this->menu.isEdit<<1)|(buf&1)]);
+  uint8_t y = (buf >> 8) & 0x0F;
+  uint8_t cursorId = buf & 0x00FF;
+  if (cursorId <= 1) {
+    cursorId = pgm_read_byte(&curType[(this->menu.isEdit << 1)|(cursorId & 0x01)]);
+  }
   if (cursorType != CURSOR_TYPE_ARROW){
     cursorId = cursorType;
   }

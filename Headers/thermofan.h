@@ -17,6 +17,8 @@
 #define TF_HEAT_OFF 0
 #define TF_HEAT_ON 1
 #define TF_ON_HOLDER 2
+#define TF_HEAT_ON_FIX_POWER 3
+#define TF_HEAT_COOLING 4
 
 #define PORT_GERKON PINC
 #define GERKON (1 << PINC3)
@@ -49,6 +51,7 @@ class ThermoFan{
     void setPowerOn();
     void setPowerOff();
     void setPowerSleep();
+    void setPowerFixOnOff();
     void setPower(uint8_t power);
     void setPower(bool isClockwise);
     void setFan(uint8_t fan);
