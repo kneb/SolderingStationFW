@@ -13,6 +13,7 @@
 
 #define MAX_TFAN_TEMP 450
 #define MIN_TFAN_TEMP 50
+#define TFAN_COOLING 80
 
 #define TF_HEAT_OFF 0
 #define TF_HEAT_ON 1
@@ -25,6 +26,7 @@
 
 class ThermoFan{
   private:
+    uint8_t heatinStage;
   public:
     static uint16_t EEMEM arefTemp1; 
     static uint16_t EEMEM arefTemp2;
@@ -60,6 +62,7 @@ class ThermoFan{
     void setTemp(uint16_t temp);
     void setTemp(bool isClockwise);
     void getStatus();
+    void getCooling();
     void tempConversion(uint16_t adc);
     void atributesConversion();
     void setEtalon(bool isClockwise);

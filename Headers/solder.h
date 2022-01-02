@@ -17,6 +17,7 @@
 #define SOL_HEAT_OFF 0
 #define SOL_HEAT_ON 1
 #define SOL_HEAT_SLEEP 2
+#define SOL_HEAT_ON_FIX_POWER 3
 
 #define PORT_VIBRO PIND
 #define VIBRO (1 << PIND3)
@@ -43,6 +44,7 @@ class Solder{
     uint8_t power;
     void setPowerOn();
     void setPowerOff();
+    void setPowerFixOnOff();
     void setTemp(uint16_t temp);
     void setTemp(bool isClockwise);
     void setPowerSleep();

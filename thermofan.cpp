@@ -17,6 +17,7 @@ uint8_t EEMEM ThermoFan::afanSets = 50;
 
 ThermoFan::ThermoFan(){
   this->currentTemp = 0;
+  this->heatinStage = TF_HEAT_OFF;
   this->isPowered = TF_HEAT_OFF;
 }
 
@@ -33,29 +34,42 @@ void ThermoFan::readEeprom(){
 
 void ThermoFan::setPowerOn(){
   this->isPowered = TF_HEAT_ON;
+  this->heatinStage = TF_HEAT_ON;
   LED_PORT &= ~LED_FEN; //Led on
   TCCR2 |= (1 << COM21); //PWM Fan on
-
   TCCR1A |= (1 << COM1A1); //PWM Temp on
 }
 
 void ThermoFan::setPowerOff(){
   this->isPowered = TF_HEAT_OFF;
-  LED_PORT |= LED_FEN; //Led off
   TCCR1A &= ~(1 << COM1A1); //PWM Temp off
+  if (this->currentTemp < TFAN_COOLING){
+      TCCR2 &= ~(1 << COM21); //PWM Fan off
+  } else {  
+    if ((PORT_GERKON & GERKON)||(lcd.menu.level==3)){
+      this->fanBuf = this->fan;
+      this->setFan((uint8_t)100);
+      this->heatinStage = TF_HEAT_COOLING;
+    }
+  }
+  LED_PORT |= LED_FEN; //Led off
 }
 
 void ThermoFan::setPowerSleep(){
   this->isPowered = TF_ON_HOLDER;
+  this->heatinStage = TF_HEAT_COOLING;
+  TCCR1A &= ~(1 << COM1A1); //PWM Temp off
   this->fanBuf = this->fan;
   this->setFan((uint8_t)100);
-  TCCR1A &= ~(1 << COM1A1); //PWM Temp off
 }
 
 void ThermoFan::setPowerFixOnOff(){
   if (this->isPowered != 3) { //If power off, then power set on
     this->isPowered = TF_HEAT_ON_FIX_POWER;
+    this->heatinStage = TF_HEAT_ON;
     LED_PORT &= ~LED_FEN; //Led on
+    TCCR2 |= (1 << COM21); //PWM Fan on
+    TCCR1A |= (1 << COM1A1); //PWM Temp on
 
   } else {
     this->setPowerOff();
@@ -64,9 +78,11 @@ void ThermoFan::setPowerFixOnOff(){
 
 void ThermoFan::setFan(uint8_t fan){
   this->fan = fan;
-    lcd.printInt(7, 0, fan, 3, false);
-    if (fan < 100){
-      hd44780.sendStringFlash(PSTR("%"));
+    if (lcd.menu.level == 0) {
+      lcd.printInt(7, 0, fan, 3, false);
+      if (fan < 100){
+        hd44780.sendStringFlash(PSTR("%"));
+      }
     }
   this->setFanPWM();
 }
@@ -109,12 +125,27 @@ void ThermoFan::getStatus(){
     if (this->isPowered == TF_HEAT_ON){
       this->setPowerSleep();
     } else if (this->isPowered == TF_ON_HOLDER){
+        if (this->currentTemp < TFAN_COOLING)
         LED_PORT ^= LED_FEN; // Blink Led fan
     }
   } else {
     if (this->isPowered == TF_ON_HOLDER){
       this->setFan(this->fanBuf);
       this->setPowerOn();
+    }
+  }
+}
+
+void ThermoFan::getCooling(){
+  if (this->heatinStage == TF_HEAT_COOLING){
+    if (this->currentTemp < TFAN_COOLING){
+      this->heatinStage = TF_HEAT_OFF;
+      this->setFan(this->fanBuf);
+      LED_PORT |= LED_FEN; //Led off
+      TCCR2 &= ~(1 << COM21); //PWM Fan off
+      sound.beep(150, 3, 200);
+    } else {
+      LED_PORT ^= LED_FEN; // Blink Led fan
     }
   }
 }
@@ -171,17 +202,19 @@ void ThermoFan::updateEeprom(){
 
 void ThermoFan::setPower(uint8_t power){
   this->power = power;
-  OCR1A = power*156 + power/4;
+  OCR1A = power*31 + power/4;
 }
 
 void ThermoFan::setPower(bool isClockwise){
   if (isClockwise){
     if (this->power < 100){
-      this->setPower(++this->power);
+      this->power += 5;
+      this->setPower(this->power);
     }
   } else {
-    if (this->power > 1){
-      this->setPower(--this->power);
+    if (this->power > 5){
+      this->power -= 5;
+      this->setPower(this->power);
     }
   }
   lcd.printInt(10, 1, this->power, 3);

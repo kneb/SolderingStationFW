@@ -88,7 +88,8 @@ void Encoder::onClickButton(){
         case 3: //Save etalons to eeprom
           solder.updateEeprom();
           break;
-        case 4: //Set power on\off
+        case 4: //Set power solder on\off
+          solder.setPowerFixOnOff();
           break;
         case 5: //Set power editing
           sound.beep(200, 1, 0);
@@ -115,7 +116,8 @@ void Encoder::onClickButton(){
         case 3: //Save etalons to eeprom
           thermoFan.updateEeprom();
           break;
-        case 4: //Set power on\off
+        case 4: //Set power thermofan on\off
+          thermoFan.setPowerFixOnOff();
           break;
         case 5: //Set power editing
           sound.beep(200, 1, 0);

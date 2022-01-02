@@ -31,6 +31,10 @@ void Solder::setPowerOff(){
   TCCR1A &= ~(1 << COM1B1); //PWM Temp off
 }
 
+void Solder::setPowerFixOnOff(){
+  
+}
+
 void Solder::setPowerSleep(){
   this->isPowered = SOL_HEAT_SLEEP;
   TCCR1A &= ~(1 << COM1B1); //PWM Temp off
@@ -55,7 +59,7 @@ void Solder::setTemp(bool isClockwise){
 
 void Solder::setPower(uint8_t power){
   this->power = power;
-  OCR1B = 156*power;
+  OCR1B = 31*power;
 }
 
 void Solder::setPower(bool isClockwise){

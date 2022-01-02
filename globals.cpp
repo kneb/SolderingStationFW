@@ -34,8 +34,8 @@ void init(){
 
   TCCR1A = (1 << WGM11);
   TCCR1B = (1 << WGM13)|(1 << WGM12)|(1 << CS12)|(1 << CS10);
-  ICR1 = 15624;
-  OCR1B = 15600;
+  ICR1 = 3124;
+  OCR1B = 3100;
 
   TCCR2 = (1 << WGM21)|(1 << WGM20)|(1 << CS22)|(1 << CS21);
 
@@ -69,7 +69,7 @@ ISR(TIMER0_OVF_vect){ //Timer0 at frequency ~61Hz (~16,4ms)
       }
     }
     if ((tim % 15) == 0){
-      
+      thermoFan.getCooling();
     }
   } else { //The code is executable with a frequency of one second
     tim = 0;
@@ -122,19 +122,23 @@ void Sound::beep(uint16_t duration_ms=500, uint8_t count=1, uint16_t delay_ms=50
 ISR(ADC_vect){
   if ((ADMUX & 1) == 1){
     thermoFan.tempConversion(ADCW);
+  PORTC &= ~4;
   } else {
     solder.tempConversion(ADCW);
+  PORTC &= ~4;
   }
 }
 
 ISR(TIMER1_COMPB_vect){
-  _delay_ms(1);
+  _delay_us(800);
   ADMUX &= 0xFE;
   ADCSRA |= (1 << ADSC); //start ADC converter
+  PORTC |= 4;
 }
 
 ISR(TIMER1_OVF_vect){
-  _delay_ms(1);
+  _delay_us(800);
   ADMUX |= 1;
   ADCSRA |= (1 << ADSC); //start ADC converter
+  PORTC |= 4;
 }
