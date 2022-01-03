@@ -153,6 +153,9 @@ void ThermoFan::getCooling(){
 void ThermoFan::tempConversion(uint16_t adc){
   this->currentTemp = this->k*adc + this->b;
   this->adc = adc;
+  if (this->isPowered == TF_HEAT_ON){
+    this->PID.computePower(this->currentTemp, this->temp);
+  }
 }
 
 void ThermoFan::atributesConversion(){
