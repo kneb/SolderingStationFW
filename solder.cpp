@@ -16,6 +16,7 @@ uint16_t EEMEM Solder::atempSets = 250;
 
 Solder::Solder(){
   this->currentTemp = 0;
+  this->timerSleep = 0;
   this->isPowered = SOL_HEAT_OFF;
 }
 
@@ -32,12 +33,25 @@ void Solder::setPowerOff(){
 }
 
 void Solder::setPowerFixOnOff(){
-  
+  if (this->isPowered != SOL_HEAT_ON_FIX_POWER){
+    this->isPowered = SOL_HEAT_ON_FIX_POWER;
+    LED_PORT &= ~LED_SOL; //Led solder on
+    TCCR1A |= (1 << COM1B1); //PWM Temp on
+  } else {
+    this->setPowerOff();
+  }
 }
 
 void Solder::setPowerSleep(){
   this->isPowered = SOL_HEAT_SLEEP;
   TCCR1A &= ~(1 << COM1B1); //PWM Temp off
+  sound.beep(300, 3, 400);
+}
+
+void Solder::getStatus(){
+  if (this->isPowered == SOL_HEAT_SLEEP){
+    LED_PORT ^= LED_SOL; //Led solder blink
+  }
 }
 
 void Solder::setTemp(uint16_t temp){

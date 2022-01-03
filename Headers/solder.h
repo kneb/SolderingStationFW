@@ -10,9 +10,11 @@
 
 #include <avr/io.h>
 #include <avr/eeprom.h>
+#include "pid.h"
 
 #define MAX_SOLDER_TEMP 410
 #define MIN_SOLDER_TEMP 50
+#define DELAY_SLEEP 180 //in sec (3 min)
 
 #define SOL_HEAT_OFF 0
 #define SOL_HEAT_ON 1
@@ -42,6 +44,10 @@ class Solder{
     uint16_t refAdc2;
     uint16_t adc;
     uint8_t power;
+    uint8_t timerSleep;
+
+    PIDRegulator PID;
+    
     void setPowerOn();
     void setPowerOff();
     void setPowerFixOnOff();
@@ -56,6 +62,7 @@ class Solder{
     void fixEtalon();
     void readEeprom();
     void updateEeprom();
+    void getStatus();
 };
 
 #endif /* SOLDER_H_ */

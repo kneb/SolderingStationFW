@@ -43,7 +43,6 @@
 #define SOUND_PORT PORTB
 #define SOUND_PIN 1
 
-
 class Sound{
   private:
     uint8_t beepDuration;

@@ -10,6 +10,7 @@
 
 #include <avr/io.h>
 #include <avr/eeprom.h>
+#include "pid.h"
 
 #define MAX_TFAN_TEMP 450
 #define MIN_TFAN_TEMP 50
@@ -48,6 +49,8 @@ class ThermoFan{
     uint16_t refAdc2;
     uint16_t adc;
     uint8_t power;
+
+    PIDRegulator PID;
 
     ThermoFan();
     void setPowerOn();

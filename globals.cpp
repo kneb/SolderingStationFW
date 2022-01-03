@@ -35,13 +35,22 @@ void init(){
   TCCR1A = (1 << WGM11);
   TCCR1B = (1 << WGM13)|(1 << WGM12)|(1 << CS12)|(1 << CS10);
   ICR1 = 3124;
-  OCR1B = 3100;
+  OCR1B = 1500;
 
   TCCR2 = (1 << WGM21)|(1 << WGM20)|(1 << CS22)|(1 << CS21);
 
   ADMUX = (1 << REFS1)|(1 << REFS0); //internal 2.56v
   ADCSRA = (1 << ADEN)|(1 << ADIE)|(1 << ADPS2)|(1 << ADPS1)|(1 << ADPS0); //128kHz
   
+}
+
+ISR(INT1_vect){ //Vibro sensor hakko
+  GICR &= ~(1 << INT1);
+  solder.timerSleep = 0;
+  if (solder.isPowered == SOL_HEAT_SLEEP){
+    solder.setPowerOn();
+    sound.beep(100, 3, 200);
+  }
 }
 
 ISR(INT0_vect){ //the encoder has been turned
@@ -64,6 +73,7 @@ ISR(TIMER0_OVF_vect){ //Timer0 at frequency ~61Hz (~16,4ms)
     tim ++;
     if ((tim % 30) == 0){
       thermoFan.getStatus();
+      solder.getStatus();
       if (lcd.menu.level == 0){
         lcd.printIconsStatus();
       }
@@ -95,7 +105,14 @@ ISR(TIMER0_OVF_vect){ //Timer0 at frequency ~61Hz (~16,4ms)
         }                  
       }
     }     
-    
+    if (solder.isPowered == SOL_HEAT_ON){
+      if (solder.timerSleep < DELAY_SLEEP){
+        solder.timerSleep += 1;
+      } else {
+        solder.setPowerSleep();
+      }
+      GICR |= (1 << INT1);
+    }
   }
 }
 
@@ -122,10 +139,8 @@ void Sound::beep(uint16_t duration_ms=500, uint8_t count=1, uint16_t delay_ms=50
 ISR(ADC_vect){
   if ((ADMUX & 1) == 1){
     thermoFan.tempConversion(ADCW);
-  PORTC &= ~4;
   } else {
     solder.tempConversion(ADCW);
-  PORTC &= ~4;
   }
 }
 
@@ -133,12 +148,10 @@ ISR(TIMER1_COMPB_vect){
   _delay_us(800);
   ADMUX &= 0xFE;
   ADCSRA |= (1 << ADSC); //start ADC converter
-  PORTC |= 4;
 }
 
 ISR(TIMER1_OVF_vect){
   _delay_us(800);
   ADMUX |= 1;
   ADCSRA |= (1 << ADSC); //start ADC converter
-  PORTC |= 4;
 }
