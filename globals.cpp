@@ -139,8 +139,10 @@ void Sound::beep(uint16_t duration_ms=500, uint8_t count=1, uint16_t delay_ms=50
 ISR(ADC_vect){
   if ((ADMUX & 1) == 1){
     thermoFan.tempConversion(ADCW);
+    PORTC &= ~4;
   } else {
     solder.tempConversion(ADCW);
+    PORTC &= ~4;
   }
 }
 
@@ -148,10 +150,12 @@ ISR(TIMER1_COMPB_vect){
   _delay_us(800);
   ADMUX &= 0xFE;
   ADCSRA |= (1 << ADSC); //start ADC converter
+  PORTC |= 4;
 }
 
 ISR(TIMER1_OVF_vect){
   _delay_us(800);
   ADMUX |= 1;
   ADCSRA |= (1 << ADSC); //start ADC converter
+  PORTC |= 4;
 }

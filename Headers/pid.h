@@ -20,12 +20,14 @@ class PIDRegulator{
     float kP;
     float kI;
     float kD;
+    float dT;
     float integral;
-    float prevError;
+    int16_t prevError;
   public:
     PIDRegulator();
     void setMultipliers(float mP, float mI, float mD);
-
+    uint8_t computePower(uint16_t input, uint16_t set);
+    void clear();
 };
 
 #endif /* PID_H_ */
