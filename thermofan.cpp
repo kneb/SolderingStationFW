@@ -12,13 +12,14 @@ uint16_t EEMEM ThermoFan::arefTemp1 = 30;
 uint16_t EEMEM ThermoFan::arefTemp2 = 50;
 uint16_t EEMEM ThermoFan::arefAdc1 = 108;
 uint16_t EEMEM ThermoFan::arefAdc2 = 200;
-uint16_t EEMEM ThermoFan::atempSets = 250;
+uint16_t EEMEM ThermoFan::atempSets = 200;
 uint8_t EEMEM ThermoFan::afanSets = 50;
 
 ThermoFan::ThermoFan(){
   this->currentTemp = 0;
   this->heatinStage = TF_HEAT_OFF;
   this->isPowered = TF_HEAT_OFF;
+  this->PID.setMultipliers(0.6, 0.4, 0.2);
 }
 
 void ThermoFan::readEeprom(){
@@ -38,6 +39,7 @@ void ThermoFan::setPowerOn(){
   LED_PORT &= ~LED_FEN; //Led on
   TCCR2 |= (1 << COM21); //PWM Fan on
   TCCR1A |= (1 << COM1A1); //PWM Temp on
+  this->PID.clear();
 }
 
 void ThermoFan::setPowerOff(){
@@ -154,7 +156,7 @@ void ThermoFan::tempConversion(uint16_t adc){
   this->currentTemp = this->k*adc + this->b;
   this->adc = adc;
   if (this->isPowered == TF_HEAT_ON){
-    this->PID.computePower(this->currentTemp, this->temp);
+    this->setPower(this->PID.computePower(this->currentTemp, this->temp));
   }
 }
 

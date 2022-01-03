@@ -18,12 +18,14 @@ Solder::Solder(){
   this->currentTemp = 0;
   this->timerSleep = 0;
   this->isPowered = SOL_HEAT_OFF;
+  this->PID.setMultipliers(0.6, 0.4, 0.2);
 }
 
 void Solder::setPowerOn(){
   this->isPowered = SOL_HEAT_ON;
   LED_PORT &= ~LED_SOL; //Led solder on
   TCCR1A |= (1 << COM1B1); //PWM Temp on
+  this->PID.clear();
 }
 
 void Solder::setPowerOff(){
@@ -92,6 +94,9 @@ void Solder::setPower(bool isClockwise){
 void Solder::tempConversion(uint16_t adc){
   this->currentTemp = this->k*adc + this->b;
   this->adc = adc;
+  if (this->isPowered == SOL_HEAT_ON){
+    this->setPower(this->PID.computePower(this->currentTemp, this->temp));
+  }
 }
 
 void Solder::atributesConversion(){
