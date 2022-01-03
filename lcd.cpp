@@ -15,10 +15,20 @@ const uint16_t curPosDashboard[6] PROGMEM = {
   0x5100, 0x5000, 0xA000, 0xB001, 0xB101, 0xA100
 };
 const uint16_t curPosRootMenu[5] PROGMEM = {
-  0x6100, 0x6000, 0xD000, 0xE001, 0xD100
+  0x6100, 0x6000, 0xD000, 0xE001, 0xB100
 };
 const uint16_t curPosCalibration[6] PROGMEM = {
   0x4100, 0x4000, 0xE001, 0xE101, 0x915E, 0x9101
+};
+const uint16_t curPosPIDMenu[8] PROGMEM = {
+  0x4100, //solder kP
+  0x4000, //tf kP
+  0x9000, //tf kI
+  0xE000, //tf kD
+  0xE001, //exit
+  0xE101, //save
+  0xE100, //solder kD
+  0x9100 //solder kI
 };
 
 Lcd::Lcd(){
@@ -58,7 +68,32 @@ void Lcd::printMenu(){
   hd44780.goTo(0, 0);
   hd44780.sendStringFlash(PSTR("cal.TF   Save  x"));
   hd44780.goTo(0, 1);
-  hd44780.sendStringFlash(PSTR("cal.Sl  Delay"));
+  hd44780.sendStringFlash(PSTR("cal.Sl  PID"));
+  this->printMenuCursor(CURSOR_TYPE_ARROW);
+  sei();
+}
+
+void Lcd::printPIDMenu(){
+  cli();
+  hd44780.clear();
+  hd44780.goTo(0, 0);
+  hd44780.sendStringFlash(PSTR("\x04"));
+  this->printInt(1, 0, thermoFan.PID.getMultiplier(PID_Types::PID_KP), 3);
+  hd44780.sendStringFlash(PSTR(" I"));
+  this->printInt(6, 0, thermoFan.PID.getMultiplier(PID_Types::PID_KI), 3);
+  hd44780.sendStringFlash(PSTR(" D"));
+  this->printInt(11, 0, thermoFan.PID.getMultiplier(PID_Types::PID_KD), 3);
+  hd44780.sendStringFlash(PSTR(" x"));
+
+  hd44780.goTo(0, 1);
+  hd44780.sendChar(0);
+  this->printInt(1, 1, solder.PID.getMultiplier(PID_Types::PID_KP), 3);
+  hd44780.sendStringFlash(PSTR(" I"));
+  this->printInt(6, 1, solder.PID.getMultiplier(PID_Types::PID_KI), 3);
+  hd44780.sendStringFlash(PSTR(" D"));
+  this->printInt(11, 1, solder.PID.getMultiplier(PID_Types::PID_KD), 3);
+  hd44780.sendStringFlash(PSTR(" s"));
+
   this->printMenuCursor(CURSOR_TYPE_ARROW);
   sei();
 }
@@ -139,9 +174,12 @@ void Lcd::printMenuCursor(uint8_t cursorType = CURSOR_TYPE_ARROW){
     case 1: //Root menu cursor moving
       buf = pgm_read_word(&curPosRootMenu[this->menu.param]);    
       break;
-    case 2:
-    case 3:
+    case 2: //TF and
+    case 3: //Solder menu cursor moving
       buf = pgm_read_word(&curPosCalibration[this->menu.param]);
+      break;
+    case 4: //PID Multipliers cursor moving
+      buf = pgm_read_word(&curPosPIDMenu[this->menu.param]);
       break;
   } 
   uint8_t x = buf >> 12;

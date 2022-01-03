@@ -35,6 +35,9 @@ class ThermoFan{
     static uint16_t EEMEM arefAdc2;
     static uint16_t EEMEM atempSets;
     static uint8_t EEMEM afanSets;
+    static float EEMEM akP;
+    static float EEMEM akI;
+    static float EEMEM akD;
 
     uint8_t fan;
     uint8_t fanBuf;

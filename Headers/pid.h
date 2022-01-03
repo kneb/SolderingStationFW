@@ -15,6 +15,10 @@
 #include <stdio.h>
 #include <avr/interrupt.h>
 
+enum class PID_Types {
+  PID_KP, PID_KI, PID_KD
+};
+
 class PIDRegulator{
   private:
     float kP;
@@ -25,9 +29,12 @@ class PIDRegulator{
     int16_t prevError;
   public:
     PIDRegulator();
-    void setMultipliers(float mP, float mI, float mD);
     uint8_t computePower(uint16_t input, uint16_t set);
     void clear();
+    uint16_t getMultiplier(PID_Types typeKPID);
+    void setMultiplier(PID_Types typeKPID, bool isClockwise);
+    void readEeprom(float *akP, float *akI, float *akD);
+    void updateEeprom(float *akP, float *akI, float *akD);
 };
 
 #endif /* PID_H_ */

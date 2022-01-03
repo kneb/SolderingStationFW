@@ -32,6 +32,10 @@ class Solder{
     static uint16_t EEMEM arefAdc1;
     static uint16_t EEMEM arefAdc2;
     static uint16_t EEMEM atempSets;
+    static float EEMEM akP;
+    static float EEMEM akI;
+    static float EEMEM akD;
+
     Solder();
     uint16_t temp;
     uint16_t currentTemp;

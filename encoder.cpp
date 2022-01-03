@@ -59,13 +59,20 @@ void Encoder::onClickButton(){
           lcd.printCalibration(CALIBRATION_THERMOFAN);
           break;
         case 2: //Save current set's
+          eeprom_update_byte(&ThermoFan::afanSets, thermoFan.fan);
+          eeprom_update_word(&ThermoFan::atempSets, thermoFan.temp);
+          eeprom_update_word(&Solder::atempSets, solder.temp);
+          sound.beep(400, 2, 500);
           break;
         case 3: //Exit the root menu
           lcd.menu.level = 0;
           lcd.menu.param = 5;
           lcd.printMain();
           break;
-        case 4: //Delay
+        case 4: //PID Menu
+          lcd.menu.level = 4;
+          lcd.menu.param = 4;
+          lcd.printPIDMenu();
           break;
       }
       break;
@@ -76,7 +83,7 @@ void Encoder::onClickButton(){
           sound.beep(200, 1, 0);
           lcd.swapIsEdit();
           if (lcd.menu.isEdit == 0) {
-            thermoFan.fixEtalon();
+            solder.fixEtalon();
           }
           break;
         case 2: //Exit the calibration menu
@@ -125,6 +132,30 @@ void Encoder::onClickButton(){
           break;
       }      
       break;
+    case 4: //PID Menu
+      switch (lcd.menu.param){
+        case 0: //Solder kP switch edit
+        case 1: //TF kP switch edit
+        case 2: //TF kI switch edit
+        case 3: //TF kD switch edit
+          lcd.swapIsEdit();
+          break;
+        case 4: //Exit
+          lcd.menu.level = 1;
+          lcd.menu.param = 4;
+          lcd.printMenu();
+          break;
+        case 5: //Save
+          thermoFan.PID.updateEeprom(&ThermoFan::akP, &ThermoFan::akI, &ThermoFan::akD);
+          solder.PID.updateEeprom(&Solder::akP, &Solder::akI, &Solder::akD);
+          sound.beep(400, 2, 500);
+          break;
+        case 6: //Solder kD switch edit
+        case 7: //Solder kI switch edit
+          lcd.swapIsEdit();
+          break;
+      }
+      break;
   }
 }
 
@@ -146,12 +177,20 @@ void Encoder::onRotation(bool isClockwise){
         lcd.menu.param = (lcd.menu.param == 0) ? 4 : (lcd.menu.param - 1);    
       }
       lcd.printMenuCursor(CURSOR_TYPE_ARROW);
-    } else if ((lcd.menu.level == 2)||(lcd.menu.level == 3)) { //Calibration menu Thermofan
+    } else if ((lcd.menu.level == 2)||(lcd.menu.level == 3)) { //Calibration menu Thermofan or Solder
       lcd.printMenuCursor(CURSOR_TYPE_EMPTY);
       if (isClockwise == true){       
         lcd.menu.param = (lcd.menu.param == 5) ? 0 : (lcd.menu.param + 1);
       } else {
         lcd.menu.param = (lcd.menu.param == 0) ? 5 : (lcd.menu.param - 1);    
+      }
+      lcd.printMenuCursor(CURSOR_TYPE_ARROW);
+    } else if (lcd.menu.level == 4){ //PID Menu 
+      lcd.printMenuCursor(CURSOR_TYPE_EMPTY);
+      if (isClockwise == true){       
+        lcd.menu.param = (lcd.menu.param == 7) ? 0 : (lcd.menu.param + 1);
+      } else {
+        lcd.menu.param = (lcd.menu.param == 0) ? 7 : (lcd.menu.param - 1);    
       }
       lcd.printMenuCursor(CURSOR_TYPE_ARROW);
     }
@@ -191,6 +230,33 @@ void Encoder::onRotation(bool isClockwise){
           break;
         case 5: //Changed power
           solder.setPower(isClockwise);
+          break;
+      }
+    } else if (lcd.menu.level == 4){ //PID menu
+      switch (lcd.menu.param){
+        case 0: //Solder kP
+          solder.PID.setMultiplier(PID_Types::PID_KP, isClockwise);
+          lcd.printInt(1, 1, solder.PID.getMultiplier(PID_Types::PID_KP), 3);
+          break;
+        case 1: //TF kP
+          thermoFan.PID.setMultiplier(PID_Types::PID_KP, isClockwise);
+          lcd.printInt(1, 0, thermoFan.PID.getMultiplier(PID_Types::PID_KP), 3);
+          break;
+        case 2: //TF kI
+          thermoFan.PID.setMultiplier(PID_Types::PID_KI, isClockwise);
+          lcd.printInt(6, 0, thermoFan.PID.getMultiplier(PID_Types::PID_KI), 3);
+          break;
+        case 3: //TF kD
+          thermoFan.PID.setMultiplier(PID_Types::PID_KD, isClockwise);
+          lcd.printInt(11, 0, thermoFan.PID.getMultiplier(PID_Types::PID_KD), 3);
+          break;
+        case 6: //Solder kI
+          solder.PID.setMultiplier(PID_Types::PID_KD, isClockwise);
+          lcd.printInt(11, 1, solder.PID.getMultiplier(PID_Types::PID_KD), 3);
+          break;
+        case 7: //Solder kI
+          solder.PID.setMultiplier(PID_Types::PID_KI, isClockwise);
+          lcd.printInt(6, 1, solder.PID.getMultiplier(PID_Types::PID_KI), 3);
           break;
       }
     }

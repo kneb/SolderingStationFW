@@ -7,18 +7,12 @@
 
 #include "Headers/pid.h"
 #include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 
 PIDRegulator::PIDRegulator(){
   this->integral = 0.;
   this->prevError = 0;
-  this->setMultipliers(0., 0., 0.);
   this->dT = 0.2;
-}
-
-void PIDRegulator::setMultipliers(float mP, float mI, float mD){
-  this->kP = mP;
-  this->kI = mI;
-  this->kD = mD;
 }
 
 uint8_t PIDRegulator::computePower(uint16_t input, uint16_t set){
@@ -37,4 +31,39 @@ uint8_t PIDRegulator::computePower(uint16_t input, uint16_t set){
 void PIDRegulator::clear(){
   this->integral = 0;
   this->prevError = 0;
+}
+    
+uint16_t PIDRegulator::getMultiplier(PID_Types typeKPID){
+  if (typeKPID == PID_Types::PID_KP){
+    return (uint16_t)(this->kP*100);
+  } else if (typeKPID == PID_Types::PID_KI){
+    return this->kI*100;
+  } else {
+    return this->kD*100;
+  }
+}
+
+void PIDRegulator::setMultiplier(PID_Types typeKPID, 
+          bool isClockwise){
+  float dp = 0;
+  if (isClockwise) dp = 0.01; else dp = -0.01;          
+  if (typeKPID == PID_Types::PID_KP){
+    this->kP += dp;
+  } else if (typeKPID == PID_Types::PID_KI){
+    this->kI += dp;
+  } else {
+    this->kD += dp;   
+  }
+}
+    
+void PIDRegulator::readEeprom(float *akP, float *akI, float *akD){
+  this->kP = eeprom_read_float(akP);
+  this->kI = eeprom_read_float(akI);
+  this->kD = eeprom_read_float(akD);
+}
+
+void PIDRegulator::updateEeprom(float *akP, float *akI, float *akD){
+  eeprom_update_float(akP, this->kP);
+  eeprom_update_float(akI, this->kI);
+  eeprom_update_float(akD, this->kD);
 }

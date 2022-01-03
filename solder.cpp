@@ -13,12 +13,14 @@ uint16_t EEMEM Solder::arefTemp2 = 150;
 uint16_t EEMEM Solder::arefAdc1 = 100;
 uint16_t EEMEM Solder::arefAdc2 = 500;
 uint16_t EEMEM Solder::atempSets = 250;
+float EEMEM Solder::akP = 0.4;
+float EEMEM Solder::akI = 0.3;
+float EEMEM Solder::akD = 0.2;
 
 Solder::Solder(){
   this->currentTemp = 0;
   this->timerSleep = 0;
   this->isPowered = SOL_HEAT_OFF;
-  this->PID.setMultipliers(0.6, 0.4, 0.2);
 }
 
 void Solder::setPowerOn(){
@@ -93,7 +95,7 @@ void Solder::setPower(bool isClockwise){
 
 void Solder::tempConversion(uint16_t adc){
   this->currentTemp = this->k*adc + this->b;
-  this->adc = adc;
+  this->adc = (this->adc+adc)/2;
   if (this->isPowered == SOL_HEAT_ON){
     this->setPower(this->PID.computePower(this->currentTemp, this->temp));
   }
@@ -137,6 +139,7 @@ void Solder::fixEtalon(){
 }
 
 void Solder::readEeprom(){
+  this->PID.readEeprom(&Solder::akP, &Solder::akI, &Solder::akD);
   this->temp = eeprom_read_word(&Solder::atempSets);
   this->refTemp1 = eeprom_read_word(&Solder::arefTemp1);
   this->refTemp2 = eeprom_read_word(&Solder::arefTemp2);

@@ -36,6 +36,7 @@ class Lcd{
     void printLogo();
     void printMain(); 
     void printMenu();
+    void printPIDMenu();
     void printCalibration(uint8_t calibrationMenu);
     void printIconsStatus();
     void printMenuCursor(uint8_t cursorType);

@@ -27,7 +27,7 @@ all: $(OBJECTS)
 	$(COMPILER) $(LINK) $(SRCOBJ) -o $(BUILDDIR)/$(OUTNAME).elf
 	@rm -f $(BUILDDIR)/$(OUTNAME).hex
 	@avr-objcopy -j .text -j .data -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).hex
-	@avr-objcopy -j .eeprom -O binary $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).bin
+	@avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 --no-change-warnings -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).eep
 	@avr-size --format=avr --mcu=$(DEVICE) $(BUILDDIR)/$(OUTNAME).elf
 	@echo "Build is Ok $(BUILDDIR)/$(OUTNAME).hex"
 

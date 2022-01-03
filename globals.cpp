@@ -20,7 +20,7 @@ uint8_t tim = 0;
 void init(){
   PORTB = 0b00110001;
   DDRB = 0b00111111;
-  DDRC = 0b00000100;
+  DDRC = 0b00000000;
   DDRD = 0b11110011;
   PORTC = 0b00010000;
   
@@ -121,7 +121,7 @@ void Sound::getBeep(){
     if (this->beepTim > 0){
       this->beepTim--;
     } else {
-      SOUND_PORT |= SOUND_PIN;
+      SOUND_PORT ^= SOUND_PIN;
       this->beepCount--;
       this->beepTim = (this->beepCount%2 == 0) ? this->beepDurationDelay : this->beepDuration;
     }
@@ -139,10 +139,8 @@ void Sound::beep(uint16_t duration_ms=500, uint8_t count=1, uint16_t delay_ms=50
 ISR(ADC_vect){
   if ((ADMUX & 1) == 1){
     thermoFan.tempConversion(ADCW);
-    PORTC &= ~4;
   } else {
     solder.tempConversion(ADCW);
-    PORTC &= ~4;
   }
 }
 
@@ -150,12 +148,10 @@ ISR(TIMER1_COMPB_vect){
   _delay_us(800);
   ADMUX &= 0xFE;
   ADCSRA |= (1 << ADSC); //start ADC converter
-  PORTC |= 4;
 }
 
 ISR(TIMER1_OVF_vect){
   _delay_us(800);
   ADMUX |= 1;
   ADCSRA |= (1 << ADSC); //start ADC converter
-  PORTC |= 4;
 }

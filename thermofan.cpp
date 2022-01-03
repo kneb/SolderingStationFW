@@ -9,20 +9,23 @@
 #include "Headers/thermofan.h"
 
 uint16_t EEMEM ThermoFan::arefTemp1 = 30;
-uint16_t EEMEM ThermoFan::arefTemp2 = 50;
+uint16_t EEMEM ThermoFan::arefTemp2 = 190;
 uint16_t EEMEM ThermoFan::arefAdc1 = 108;
 uint16_t EEMEM ThermoFan::arefAdc2 = 200;
 uint16_t EEMEM ThermoFan::atempSets = 200;
 uint8_t EEMEM ThermoFan::afanSets = 50;
+float EEMEM ThermoFan::akP = 0.4;
+float EEMEM ThermoFan::akI = 0.3;
+float EEMEM ThermoFan::akD = 0.2;
 
 ThermoFan::ThermoFan(){
   this->currentTemp = 0;
   this->heatinStage = TF_HEAT_OFF;
   this->isPowered = TF_HEAT_OFF;
-  this->PID.setMultipliers(0.6, 0.4, 0.2);
 }
 
 void ThermoFan::readEeprom(){
+  this->PID.readEeprom(&ThermoFan::akP, &ThermoFan::akI, &ThermoFan::akD);
   this->temp = eeprom_read_word(&ThermoFan::atempSets);
   this->fan = eeprom_read_byte(&ThermoFan::afanSets);
   this->refTemp1 = eeprom_read_word(&ThermoFan::arefTemp1);
@@ -154,7 +157,7 @@ void ThermoFan::getCooling(){
 
 void ThermoFan::tempConversion(uint16_t adc){
   this->currentTemp = this->k*adc + this->b;
-  this->adc = adc;
+  this->adc = (this->adc+adc)/2;
   if (this->isPowered == TF_HEAT_ON){
     this->setPower(this->PID.computePower(this->currentTemp, this->temp));
   }
