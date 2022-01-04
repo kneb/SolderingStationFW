@@ -7,8 +7,6 @@ OUTNAME = ssfw
 DEVICE = atmega8
 CLOCK = 16000000
 COMPILER = avr-g++
-#-DF_CPU=$(CLOCK) 
-#ARGS = -Wall -Os -mmcu=$(DEVICE)
 
 ARGS = -mmcu=$(DEVICE) -std=c++14 -g -Os -Wall -Wextra -pedantic -c -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto
 LINK = -mmcu=$(DEVICE) -Wall -Wextra -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -lm
@@ -21,13 +19,12 @@ SRCOBJ := $(addprefix $(BUILDDIR)/, $(OBJECTS))
 
 .cpp.o:
 	$(COMPILER) $(ARGS) -c $< -o $(BUILDDIR)/$@
-#	@echo "Compile $< --> $(BUILDDIR)/$@"
 
 all: $(OBJECTS)
 	$(COMPILER) $(LINK) $(SRCOBJ) -o $(BUILDDIR)/$(OUTNAME).elf
 	@rm -f $(BUILDDIR)/$(OUTNAME).hex
 	@avr-objcopy -j .text -j .data -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).hex
-	@avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 --no-change-warnings -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).eep
+	@avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME)_eep.hex
 	@avr-size --format=avr --mcu=$(DEVICE) $(BUILDDIR)/$(OUTNAME).elf
 	@echo "Build is Ok $(BUILDDIR)/$(OUTNAME).hex"
 
@@ -35,8 +32,11 @@ clean:
 	@rm -f $(BUILDDIR)/*
 	@echo "All Clean"
 
-#flash:	all
-#	$(AVRDUDE) -U flash:w:main.hex:i
+fuse:
+	avrdude -c usbasp -p m8 -U lfuse:w:0xFF:m -U hfuse:w:0xD9:m
 
-#fuse:
-#	$(AVRDUDE) $(FUSES)
+eeprom:
+	avrdude -c usbasp -p m8 -U eeprom:w:$(BUILDDIR)/$(OUTNAME)_eep.hex:i
+
+flash:
+	avrdude -c usbasp -p m8 -U flash:w:$(BUILDDIR)/$(OUTNAME).hex:i

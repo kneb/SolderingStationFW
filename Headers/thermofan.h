@@ -14,7 +14,7 @@
 
 #define MAX_TFAN_TEMP 450
 #define MIN_TFAN_TEMP 50
-#define TFAN_COOLING 80
+#define TFAN_COOLING 50
 
 #define TF_HEAT_OFF 0
 #define TF_HEAT_ON 1

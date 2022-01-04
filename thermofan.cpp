@@ -129,8 +129,9 @@ void ThermoFan::getStatus(){
   if ((PORT_GERKON & GERKON) == 0){ //ThermoFan on stand
     if (this->isPowered == TF_HEAT_ON){
       this->setPowerSleep();
+      sound.beep(150, 2, 200);
     } else if (this->isPowered == TF_ON_HOLDER){
-        if (this->currentTemp < TFAN_COOLING)
+        if (this->heatinStage != TF_HEAT_COOLING)
         LED_PORT ^= LED_FEN; // Blink Led fan
     }
   } else {
