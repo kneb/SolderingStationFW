@@ -66,11 +66,13 @@ void Solder::setTemp(uint16_t temp){
 void Solder::setTemp(bool isClockwise){
   if (isClockwise){
     if (this->temp < MAX_SOLDER_TEMP){
-      this->setTemp(this->temp+5);
+      this->temp += 5;
+      this->setTemp(this->temp);
     }
   } else {
     if (this->temp > MIN_SOLDER_TEMP){
-      this->setTemp(this->temp-5);
+      this->temp -= 5;
+      this->setTemp(this->temp);
     }
   }
 }
@@ -83,11 +85,13 @@ void Solder::setPower(uint8_t power){
 void Solder::setPower(bool isClockwise){
   if (isClockwise){
     if (this->power < 100){
-      this->setPower(++this->power);
+      this->power += 1;
+      this->setPower(this->power);
     }
   } else {
     if (this->power > 1){
-      this->setPower(--this->power);
+      this->power -= 1;
+      this->setPower(this->power);
     }
   }
   lcd.printInt(10, 1, this->power, 3);

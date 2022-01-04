@@ -99,11 +99,13 @@ void ThermoFan::setFanPWM(){
 void ThermoFan::setFan(bool isClockwise){
   if (isClockwise){
     if (this->fan < 100){
-      this->setFan(++this->fan);
+      this->fan += 1;
+      this->setFan(this->fan);
     }      
   } else {
     if (this->fan > 20){
-      this->setFan(--this->fan);
+      this->fan -= 1;
+      this->setFan(this->fan);
     }
   }
 }
@@ -116,11 +118,13 @@ void ThermoFan::setTemp(uint16_t temp){
 void ThermoFan::setTemp(bool isClockwise){
   if (isClockwise){
     if (this->temp < MAX_TFAN_TEMP){
-      this->setTemp(this->temp+5);
+      this->temp += 5;
+      this->setTemp(this->temp);
     }
   } else {
     if (this->temp > MIN_TFAN_TEMP){
-      this->setTemp(this->temp-5);
+      this->temp -= 5;
+      this->setTemp(this->temp);
     }
   }
 }
