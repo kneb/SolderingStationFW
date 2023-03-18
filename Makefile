@@ -9,11 +9,12 @@ CLOCK = 16000000
 COMPILER = avr-g++
 
 ARGS = -mmcu=$(DEVICE) -std=c++14 -g -Os -Wall -Wextra -pedantic -c -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -flto
-LINK = -mmcu=$(DEVICE) -Wall -Wextra -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -lm
+LINK = -mmcu=$(DEVICE) -Wall -Wextra -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections
 
 SRCC := $(wildcard *.cpp)
 OBJECTS := $(patsubst %.cpp,%.o,$(SRCC))
 SRCOBJ := $(addprefix $(BUILDDIR)/, $(OBJECTS))
+SRCOBJL := $(patsubst %.o,%.o -lm,$(SRCOBJ))
 
 .PHONY: all clean
 
@@ -21,7 +22,7 @@ SRCOBJ := $(addprefix $(BUILDDIR)/, $(OBJECTS))
 	$(COMPILER) $(ARGS) -c $< -o $(BUILDDIR)/$@
 
 all: $(OBJECTS)
-	$(COMPILER) $(LINK) $(SRCOBJ) -o $(BUILDDIR)/$(OUTNAME).elf
+	$(COMPILER) $(LINK) $(SRCOBJL) -o $(BUILDDIR)/$(OUTNAME).elf
 	@rm -f $(BUILDDIR)/$(OUTNAME).hex
 	@avr-objcopy -j .text -j .data -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME).hex
 	@avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex $(BUILDDIR)/$(OUTNAME).elf $(BUILDDIR)/$(OUTNAME)_eep.hex
